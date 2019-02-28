@@ -11,4 +11,6 @@ incomplete CPU implementation, available [here](https://github.com/Michionlion/r
 ### Dependencies
 
 `RayTerm` requires the [OptiX 6.0.0 SDK](http://raytracing-docs.nvidia.com/optix_6_0/index.html)
-to compile. It assumes the SDK is installed to `/opt/optix`.
+and [CUDA Toolkit 10.0](https://developer.nvidia.com/cuda-toolkit-archive) to
+compile. It assumes the OptiX SDK is installed to `/opt/optix`, and the CUDA
+Toolkit to `/opt/cuda`.
