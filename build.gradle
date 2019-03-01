@@ -3,6 +3,77 @@ plugins {
     id 'google-test-test-suite'
 }
 
+model {
+    repositories {
+        libs(PrebuiltLibraries) {
+            googleTest {
+                headers.srcDirs "${google_test_location}/include"
+                binaries.withType(StaticLibraryBinary) {
+                    staticLibraryFile = file(projectDir.getPath() + "/${google_test_location}/build/libgtest.a")
+                }
+            }
+        }
+    }
+    components {
+        raytrace(NativeLibrarySpec)
+        rayterm(NativeLibrarySpec) {
+            sources.cpp.lib library: 'raytrace', linkage: link_type
+        }
+        rtexplore(NativeExecutableSpec) {
+            sources.cpp.lib library: 'raytrace', linkage: link_type
+            sources.cpp.lib library: "rayterm", linkage: link_type
+        }
+    }
+    testSuites {
+        raytraceTest(GoogleTestTestSuiteSpec) {
+            testing $.components.raytrace
+            sources.cpp.source.srcDir "src/raytrace/test"
+        }
+        raytermTest(GoogleTestTestSuiteSpec) {
+            testing $.components.raytrace
+            sources.cpp.lib library: 'raytrace', linkage: link_type
+            sources.cpp.source.srcDir "src/rayterm/test"
+        }
+    }
+    binaries {
+        all {
+            linker.args "-lncurses"
+            if(project.hasProperty('SAMPLES')) {
+                def samples = project.getProperty('SAMPLES')
+                cppCompiler.args "-DSAMPLES=${samples}"
+            }
+            if(project.hasProperty('RES_MULT')) {
+                def mult = project.getProperty('RES_MULT')
+                cppCompiler.args "-DRES_MULT=${mult}"
+            }
+            if(project.hasProperty('NO_PROGRESS')) {
+                cppCompiler.args "-DNO_PROGRESS"
+            }
+            cppCompiler.args "-std=c++11", "-msse4", "-fPIC", "-Wall"
+            if (buildType == buildTypes.debug) {
+                cppCompiler.args "-g"
+            } else if(buildType == buildTypes.release) {
+                cppCompiler.args "-O3", "-funroll-loops", "-march=native", "-mfpmath=sse"
+            }
+        }
+        withType(GoogleTestTestSuiteBinarySpec) {
+            lib library: "googleTest", linkage: "static"
+            // assumes linux
+            cppCompiler.args '-pthread'
+            linker.args '-pthread'
+        }
+    }
+    buildTypes {
+        debug
+        release
+    }
+    platforms {
+        x64 {
+            architecture "x86_64"
+        }
+    }
+}
+
 task lintMDL(type: Exec) {
     doFirst { println "--- mdl ---" }
 
@@ -39,6 +110,13 @@ task pullDeps(type: Exec) {
 task deps {
     dependsOn 'pullDeps'
     dependsOn 'buildGoogleTest'
+}
+
+// install the rayterm.so library
+task install(type: Copy) {
+    dependsOn 'build'
+    from 'build/lib/rayterm/shared/release'
+    into "${System.getProperty("user.home")}/${install_location}"
 }
 
 task test {
