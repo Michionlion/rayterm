@@ -98,6 +98,7 @@ task lintClangTidy(type: Exec) {
     args "-I${google_test_location}/include"
     args "-Isrc/rayterm/headers"
     args "-Isrc/raytrace/headers"
+    args "-std=c++11", "-msse4", "-fPIC", "-Wall", "-O3", "-funroll-loops", "-march=native", "-mfpmath=sse"
 
     doLast { println "--- ---------- ---" }
 }
