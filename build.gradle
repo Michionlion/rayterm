@@ -1,0 +1,53 @@
+plugins {
+    id 'cpp'
+    id 'google-test-test-suite'
+}
+
+task lintMDL(type: Exec) {
+    doFirst { println "--- mdl ---" }
+
+    executable "mdl"
+    args "README.md"
+
+    doLast { println "--- --- ---"}
+}
+
+task lint {
+    dependsOn 'lintMDL'
+    shouldRunAfter 'build'
+}
+
+task buildGoogleTest(type: Exec) {
+    dependsOn 'pullDeps'
+    shouldRunAfter 'pullDeps'
+    def gtest = "${projectDir.getPath()}/${google_test_location}"
+    doFirst { exec { commandLine "mkdir", "${gtest}/build" } }
+    doFirst { exec { commandLine "rm", "-rf", "${gtest}/build" } }
+    commandLine "g++", "-std=c++11", "-isystem", "${gtest}/include", "-I${gtest}", "-pthread", "-c", "${gtest}/src/gtest-all.cc", "-o", "${gtest}/build/gtest-all.o"
+    doLast {
+        exec {
+            commandLine "ar", "-rv", "${gtest}/build/libgtest.a", "${gtest}/build/gtest-all.o"
+        }
+    }
+}
+
+task pullDeps(type: Exec) {
+    doFirst { println 'Updating dependencies' }
+    commandLine 'git', 'submodule', 'update', '--init', '--recursive'
+}
+
+task deps {
+    dependsOn 'pullDeps'
+    dependsOn 'buildGoogleTest'
+}
+
+task test {
+    dependsOn "clean"
+}
+
+tasks.withType(RunTestExecutable) { task ->
+    args "--gtest_output=xml:test_detail.xml"
+    tasks.test.dependsOn task
+    // this may mess up other things
+    mustRunAfter "clean"
+}
