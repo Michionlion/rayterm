@@ -83,8 +83,28 @@ task lintMDL(type: Exec) {
     doLast { println "--- --- ---"}
 }
 
+task lintClangTidy(type: Exec) {
+    doFirst { println "--- clang-tidy ---" }
+
+    executable "clang-tidy"
+
+    // collect all .cpp files (headers are taken from include directories)
+    def cppfiles = fileTree("src").matching { it.include("**/*.cpp") }.files.path
+
+    args cppfiles
+    args "-warnings-as-errors=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*"
+    args "-header-filter=src/.*"
+    args "--"
+    args "-I${google_test_location}/include"
+    args "-Isrc/rayterm/headers"
+    args "-Isrc/raytrace/headers"
+
+    doLast { println "--- ---------- ---" }
+}
+
 task lint {
     dependsOn 'lintMDL'
+    dependsOn 'lintClangTidy'
     shouldRunAfter 'build'
 }
 
