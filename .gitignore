@@ -1,4 +1,14 @@
 # Temporary files
+/error.log
+/test_image.ppm
+
+# Build directories
+/build/
+
+# Gradle
+
+/.gradle/
+/gradle/
 *.sw[op]
 
 # Prerequisites
