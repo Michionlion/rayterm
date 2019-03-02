@@ -1,6 +1,11 @@
 language: cpp
 sudo: required
 dist: xenial
+addons:
+  apt:
+    packages:
+      - nvidia-cuda-toolkit
+
 
 # install build tools
 before_install:
@@ -12,7 +17,7 @@ before_install:
   - export PATH="$HOME/gradle-5.0/bin:$PATH"
   - gem install mdl
   # install cuda
-  - source .ci/install-cuda.sh
+  # - source .ci/install-cuda.sh
   # install optix
   - source .ci/install-optix.sh
 
