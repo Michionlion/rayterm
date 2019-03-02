@@ -3,8 +3,9 @@
 
 #include <optix.h>
 #include <optix_world.h>
-#include "raytrace.h"
 
+// When using a PixelBuffer, you MUST call `delete buffer;` after you've finished.
+// This will unmap the memory, which is required before another launch.
 class PixelBuffer {
     optix::Buffer backing_buffer;
 
@@ -26,7 +27,7 @@ class PixelBuffer {
         }
     }
 
-    const optix::float4& operator()(int x, int y) const { return data[y * width + x]; }
+    const optix::float4& get(int x, int y) const { return data[y * width + x]; }
 };
 
 class Renderer {
