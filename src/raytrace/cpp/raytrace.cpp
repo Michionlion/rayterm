@@ -12,6 +12,16 @@
 #define RES_MULT 1.0
 #endif
 
+uint8_t colorize(float value) {
+    if (value >= 1.0) {
+        return 255;
+    } else if (value <= 0.0) {
+        return 0;
+    }
+
+    return uint8_t(value * 255);
+}
+
 int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb /* = nullptr */) {
     std::fstream outfile(filename, std::fstream::out | std::fstream::binary | std::fstream::trunc);
     if (outfile.fail()) {
@@ -22,8 +32,8 @@ int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb
     auto width  = int(80 * RES_MULT);
     auto height = int(52 * RES_MULT);
 
-    outfile << "P3 ";
-    outfile << width << " " << height << " " << 255 << " ";
+    outfile << "P6 ";
+    outfile << width << " " << height << " " << 255 << "\n";
     int pixels = width * height;
     int pixel  = 0;
     for (int y = 0; y < height; y++) {
@@ -34,11 +44,11 @@ int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb
             optix::float4 sample = buffer->get(x, y);
 
             // print red
-            outfile << sample.x << " ";
+            outfile << colorize(sample.x);
             // print green
-            outfile << sample.y << " ";
+            outfile << colorize(sample.y);
             // print blue
-            outfile << sample.z << " ";
+            outfile << colorize(sample.z);
             if (cb != nullptr) {
                 cb(pixel++, pixels);
             }
