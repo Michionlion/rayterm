@@ -51,7 +51,7 @@ void Renderer::printSystemInfo() {
     uint32_t numberOfDevices = 0;
     RT_CHECK_ERROR_NO_CONTEXT(rtDeviceGetDeviceCount(&numberOfDevices));
 
-    for (int i = 0; i < numberOfDevices; i++) {
+    for (uint32_t i = 0; i < numberOfDevices; i++) {
         char name[256];
         RT_CHECK_ERROR_NO_CONTEXT(
             rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_NAME, sizeof(name), name));
