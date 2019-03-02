@@ -16,8 +16,8 @@ int launch(progress_callback cb /* = nullptr */) {
         return 1;
     }
 
-    int width  = int(80 * RES_MULT);
-    int height = int(52 * RES_MULT);
+    auto width  = int(80 * RES_MULT);
+    auto height = int(52 * RES_MULT);
 
     fprintf(outfile, "P3\n%i %i\n255\n", width, height);
     int pixels = width * height;
