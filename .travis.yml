@@ -32,4 +32,5 @@ script:
   # build
   - gradle clean --console=plain
   # lint
+  - gradle assemble --console=plain
   - gradle lint --console=plain
