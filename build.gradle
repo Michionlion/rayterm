@@ -91,7 +91,9 @@ task lintClangTidy(type: Exec) {
     // collect all .cpp files (headers are taken from include directories)
     def cppfiles = fileTree("src").matching { it.include("**/*.cpp") }.files.path
 
+
     args cppfiles
+    args "-checks=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*"
     args "-warnings-as-errors=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*"
     args "-header-filter=src/.*"
     args "--"
@@ -101,6 +103,7 @@ task lintClangTidy(type: Exec) {
     args "-std=c++11", "-msse4", "-fPIC", "-Wall", "-O3", "-funroll-loops", "-march=native", "-mfpmath=sse"
 
     doLast { println "--- ---------- ---" }
+    // doLast { println "Linted:\n${cppfiles.join "\n"}" }
 }
 
 task lint {
@@ -108,6 +111,8 @@ task lint {
     dependsOn 'lintClangTidy'
     shouldRunAfter 'build'
 }
+
+build.finalizedBy 'lint'
 
 task buildGoogleTest(type: Exec) {
     dependsOn 'pullDeps'
