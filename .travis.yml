@@ -1,5 +1,5 @@
 language: cpp
-
+sudo: required
 dist: xenial
 addons:
   apt:
@@ -19,6 +19,9 @@ before_install:
   # install optix
   - wget -o optix.sh https://developer.nvidia.com/designworks/optix/downloads/6.0.0/linux64
   - ./optix.sh --prefix $HOME/optix --exclude-subdir
+  - gcc --version
+  - which gcc
+  - which nvcc
 
 # install dependencies
 install:
