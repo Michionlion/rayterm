@@ -1,9 +1,11 @@
 language: cpp
 
-# addons:
-#   apt:
-#     packages:
-#       - clang
+dist: xenial
+addons:
+  apt:
+    packages:
+      - cuda
+
 
 # install build tools
 before_install:
@@ -14,6 +16,9 @@ before_install:
   # add gradle bin to path at the beginning to ensure it overwrites old gradle
   - export PATH="$HOME/gradle-5.0/bin:$PATH"
   - gem install mdl
+  # install optix
+  - wget -o optix.sh https://developer.nvidia.com/designworks/optix/downloads/6.0.0/linux64
+  - ./optix.sh --prefix $HOME/optix --exclude-subdir
 
 # install dependencies
 install:
@@ -27,10 +32,11 @@ cache:
     - $HOME/.gradle/caches/5.0
     - $HOME/.gradle/caches/jars-3
     - $HOME/.gradle/caches/modules-2
+    - $HOME/optix
 
 script:
   # build
   - gradle clean --console=plain
   # lint
-  - gradle assemble --console=plain
-  - gradle lint --console=plain
+  - gradle assemble --console=plain -Poptix_location=$HOME/optix
+  - gradle lint --console=plain -Poptix_location=$HOME/optix
