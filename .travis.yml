@@ -16,10 +16,11 @@ before_install:
   # add gradle bin to path at the beginning to ensure it overwrites old gradle
   - export PATH="$HOME/gradle-5.0/bin:$PATH"
   - gem install mdl
-  # install cuda
-  # - source .ci/install-cuda.sh
   # install optix
-  - source .ci/install-optix.sh
+  - wget -o optix.sh https://developer.nvidia.com/designworks/optix/downloads/6.0.0/linux64
+  - cat optix.sh
+  - chmod +x optix.sh
+  - ./optix.sh --prefix $HOME/optix --exclude-subdir
 
 # install dependencies
 install:
