@@ -12,14 +12,36 @@ model {
                     staticLibraryFile = file(projectDir.getPath() + "/${google_test_location}/build/libgtest.a")
                 }
             }
+            optix {
+                headers.srcDirs "${optix_location}/include"
+                binaries.withType(SharedLibraryBinary) {
+                    sharedLibraryFile = file("${optix_location}/lib64/liboptix.so.6.0.0")
+                }
+            }
+            cuda {
+                headers.srcDirs "${cuda_location}/include"
+                binaries.withType(SharedLibraryBinary) {
+                    sharedLibraryFile = file("${cuda_location}/lib64/libcudart.so")
+                }
+                binaries.withType(StaticLibraryBinary) {
+                    staticLibraryFile = file("${cuda_location}/lib64/libcudart_static.a")
+                }
+            }
         }
     }
     components {
-        raytrace(NativeLibrarySpec)
+        raytrace(NativeLibrarySpec) {
+            sources.cpp.lib library: 'cuda', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: 'shared'
+        }
         rayterm(NativeLibrarySpec) {
+            sources.cpp.lib library: 'cuda', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: 'shared'
             sources.cpp.lib library: 'raytrace', linkage: link_type
         }
         rtexplore(NativeExecutableSpec) {
+            sources.cpp.lib library: 'cuda', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: 'shared'
             sources.cpp.lib library: 'raytrace', linkage: link_type
             sources.cpp.lib library: "rayterm", linkage: link_type
         }
@@ -28,11 +50,15 @@ model {
         raytraceTest(GoogleTestTestSuiteSpec) {
             testing $.components.raytrace
             sources.cpp.source.srcDir "src/raytrace/test"
+            sources.cpp.lib library: 'cuda', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: 'shared'
         }
         raytermTest(GoogleTestTestSuiteSpec) {
             testing $.components.raytrace
-            sources.cpp.lib library: 'raytrace', linkage: link_type
             sources.cpp.source.srcDir "src/rayterm/test"
+            sources.cpp.lib library: 'raytrace', linkage: link_type
+            sources.cpp.lib library: 'cuda', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: 'shared'
         }
     }
     binaries {
@@ -98,6 +124,8 @@ task lintClangTidy(type: Exec) {
     args "-header-filter=src/.*"
     args "--"
     args "-I${google_test_location}/include"
+    args "-I${optix_location}/include"
+    args "-I${cuda_location}/include"
     args "-Isrc/rayterm/headers"
     args "-Isrc/raytrace/headers"
     args "-std=c++11", "-msse4", "-fPIC", "-Wall", "-O3", "-funroll-loops", "-march=native", "-mfpmath=sse"
