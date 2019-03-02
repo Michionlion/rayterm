@@ -1,11 +1,6 @@
 language: cpp
 sudo: required
 dist: xenial
-addons:
-  apt:
-    packages:
-      - cuda
-
 
 # install build tools
 before_install:
