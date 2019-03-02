@@ -9,9 +9,9 @@
 #define RES_MULT 1.0
 #endif
 
-int launch(progress_callback cb /* = NULL */) {
+int launch(progress_callback cb /* = nullptr */) {
     FILE* outfile = fopen("test_image.ppm", "w");
-    if (outfile == NULL) {
+    if (outfile == nullptr) {
         fprintf(stderr, "Error opening %s!\n", "test_image.ppm");
         return 1;
     }
@@ -31,7 +31,7 @@ int launch(progress_callback cb /* = NULL */) {
             // raise to 1 / gamma (1/2 in our case)
 
             fprintf(outfile, "%i %i %i\n", 0, 0, 0);
-            if (cb != NULL) {
+            if (cb != nullptr) {
                 cb(pixel++ / pixels);
             }
         }
