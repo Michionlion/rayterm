@@ -16,11 +16,8 @@ before_install:
   # add gradle bin to path at the beginning to ensure it overwrites old gradle
   - export PATH="$HOME/gradle-5.0/bin:$PATH"
   - gem install mdl
-  # install optix
-  - wget -o optix.sh https://developer.nvidia.com/designworks/optix/downloads/6.0.0/linux64
-  - cat optix.sh
-  - chmod +x optix.sh
-  - ./optix.sh --prefix $HOME/optix --exclude-subdir
+  - which gcc
+  - which nvcc
 
 # install dependencies
 install:
