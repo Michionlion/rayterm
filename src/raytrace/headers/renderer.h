@@ -3,6 +3,8 @@
 
 #include <optix.h>
 #include <optix_world.h>
+#include <map>
+#include <string>
 
 // When using a PixelBuffer, you MUST call `delete buffer;` after you've finished.
 // This will unmap the memory, which is required before another launch.
@@ -23,7 +25,7 @@ class PixelBuffer {
         try {
             backing_buffer->unmap();
         } catch (const optix::Exception& ex) {
-            printf("~PixelBuffer Error: %d (%s)", ex.getErrorCode(), ex.getErrorString().c_str());
+            printf("~PixelBuffer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
         }
     }
 
@@ -36,12 +38,16 @@ class Renderer {
     optix::Context context;
     optix::Buffer pixel_buffer;
 
+    std::map<std::string, optix::Program> programs;
+
     void initOptiX();
+    void initPrograms();
     void initWorld();
 
    public:
     Renderer(int width, int height) : width(width), height(height) {
         initOptiX();
+        initPrograms();
         initWorld();
     }
     ~Renderer() {
@@ -49,7 +55,7 @@ class Renderer {
         try {
             context->destroy();
         } catch (const optix::Exception& ex) {
-            printf("~Renderer Error: %d (%s)", ex.getErrorCode(), ex.getErrorString().c_str());
+            printf("~Renderer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
         }
     }
 
