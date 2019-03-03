@@ -12,7 +12,16 @@
 #define RES_MULT 1.0
 #endif
 
+float to_bt_709(float value) {
+    if (value < 0.018) {
+        return value * 4.5;
+    } else {
+        return 1.099 * pow(value, 0.45) - 0.099;
+    }
+}
+
 uint8_t colorize(float value) {
+    value = to_bt_709(value);
     if (value >= 1.0) {
         return 255;
     } else if (value <= 0.0) {
