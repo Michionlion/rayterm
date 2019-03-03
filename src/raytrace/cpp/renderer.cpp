@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include <iostream>
+#include <vector>
 
 #define HANDLE_EXCEPTIONS true
 #define STACK_SIZE 1024
@@ -18,6 +19,13 @@ void Renderer::initOptiX() {
     context->setRayTypeCount(0);
     context->setStackSize(STACK_SIZE);
 
+    std::vector<int> devices;
+    devices.push_back(0);
+
+    context->setDevices(devices.begin(), devices.end());
+
+    printf("Device: %d\n", context->getEnabledDevices());
+
     // create pixel buffer
     pixel_buffer = context->createBuffer(RT_BUFFER_OUTPUT);
     // set to rgba
@@ -30,6 +38,15 @@ void Renderer::initOptiX() {
     context->setPrintEnabled(true);
     context->setExceptionEnabled(RT_EXCEPTION_ALL, true);
 #endif
+}
+
+void Renderer::initPrograms() {
+    try {
+        programs["raygen"]    = context->createProgramFromPTXFile("ptx/raygen.ptx", "raygen");
+        programs["exception"] = context->createProgramFromPTXFile("ptx/exception.ptx", "exception");
+    } catch (optix::Exception& ex) {
+        printf("initPrograms Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
+    }
 }
 
 void Renderer::initWorld() {
