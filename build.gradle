@@ -72,6 +72,8 @@ model {
                 cppCompiler.define "NO_PROGRESS"
 
             cppCompiler.args "-std=c++11", "-msse4", "-fPIC", "-Wall"
+            setCuArgs(cppCompiler)
+
             if (buildType == buildTypes.debug) {
                 cppCompiler.args "-g"
             } else if(buildType == buildTypes.release) {
@@ -105,6 +107,15 @@ def getPTXFolder() {
         return file(ptx_folder)
     }
     return file("${project.buildDir}/${ptx_folder}")
+}
+
+def setCuArgs(cppCompiler) {
+    cppCompiler.define "PROGRAM_DIRECTORY", "\"${getPTXFolder().path}\""
+
+    def files = []
+    getCuFiles().each { file -> files.add("\"${file.name - ~/\.cu$/}\"") }
+
+    cppCompiler.define "PROGRAM_LIST", "{${files.join ", "}}"
 }
 
 task compileCu() {
