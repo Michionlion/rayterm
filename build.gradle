@@ -96,12 +96,48 @@ model {
     }
 }
 
+def getCuFiles() {
+    return fileTree("src").matching { it.include("**/*.cu") }.files
+}
+
 def getPTXFolder() {
     if(ptx_folder.startsWith("/")) {
         return file(ptx_folder)
     }
     return file("${project.buildDir}/${ptx_folder}")
 }
+
+task compileCu() {
+
+    def ptxFolder = getPTXFolder();
+    def cuFiles = getCuFiles()
+
+    doFirst {
+        ptxFolder.mkdirs();
+    }
+
+    cuFiles.each { file -> inputs.file file }
+    outputs.dir ptxFolder
+
+    doLast {
+        cuFiles.each { file ->
+            def dest = "${getPTXFolder()}/${file.name - ~/\.cu$/}.ptx"
+            println "${file.path} -> ${dest}"
+            exec {
+                executable "${cuda_location}/bin/nvcc"
+                args "-I${optix_location}/include"
+                args "-I${cuda_location}/include"
+                args "-ptx", "-o", dest
+                args file.path
+            }
+        }
+    }
+}
+
+build.dependsOn 'compileCu'
+build.mustRunAfter 'compileCu'
+
+
 task lintMDL(type: Exec) {
     doFirst { println "--- mdl ---" }
 
