@@ -40,15 +40,22 @@ class Renderer {
 
     std::map<std::string, optix::Program> programs;
 
-    void initOptiX();
+    void initContext();
     void initPrograms();
+    void initOptiX();
     void initWorld();
 
    public:
     Renderer(int width, int height) : width(width), height(height) {
-        initOptiX();
-        initPrograms();
-        initWorld();
+        try {
+            initContext();
+            initPrograms();
+            initOptiX();
+            initWorld();
+        } catch (const optix::Exception& ex) {
+            printf("Renderer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
+            exit(1);
+        }
     }
     ~Renderer() {
         // destroy context
