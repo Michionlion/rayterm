@@ -79,6 +79,13 @@ void Renderer::initOptiX() {
     }
     context->setExceptionProgram(0, it->second);
 
+    it = programs.find("miss_gradient");
+    if (it == programs.end()) {
+        printf("Error: could not find required 'miss_gradient' ptx program\n");
+        exit(1);
+    }
+    context->setMissProgram(0, it->second);
+
     // create pixel buffer
     pixel_buffer = context->createBuffer(RT_BUFFER_OUTPUT);
     // set to rgba
