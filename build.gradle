@@ -100,6 +100,12 @@ model {
     }
 }
 
+def getPTXFolder() {
+    if(ptx_folder.startsWith("/")) {
+        return file(ptx_folder)
+    }
+    return file("${project.buildDir}/${ptx_folder}")
+}
 task lintMDL(type: Exec) {
     doFirst { println "--- mdl ---" }
 
