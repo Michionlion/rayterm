@@ -60,7 +60,7 @@ if [[ "$TEST" = "true" ]]; then
     exit
 fi
 
-./build/install/raytraceTest/release/raytraceTest --gtest_filter=RaytracerTest.Success
+./build/install/raytraceTest/release/raytraceTest --gtest_filter=RaytracerTest.Screenshot
 
 if [[ "$OPEN" = "true" ]]; then
     exec feh --force-aliasing -Z test_image.ppm &

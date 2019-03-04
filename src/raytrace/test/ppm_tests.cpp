@@ -8,7 +8,7 @@
 #define RES_MULT 1.0
 #endif
 
-TEST(RaytracerTest, Success) {
+TEST(RaytracerTest, Screenshot) {
     std::chrono::steady_clock::time_point begin, end;
     auto renderer = new Renderer(int(80 * RES_MULT), int(52 * RES_MULT));
 
