@@ -105,10 +105,21 @@ def getPTXFolder() {
 task lintMDL(type: Exec) {
     doFirst { println "--- mdl ---" }
 
+    def reportDir = file("${buildDir}/lint-results")
+    def report = file("${buildDir}/lint-results/mdl.xml")
+
     executable "mdl"
     args "README.md"
 
-    doLast { println "--- --- ---"}
+    inputs.file file("README.md")
+    outputs.dir reportDir
+    outputs.file report
+
+    doLast { println "--- --- ---" }
+    doLast {
+        reportDir.mkdirs()
+        report.createNewFile()
+    }
 }
 
 task lintClangTidy(type: Exec) {
@@ -117,10 +128,15 @@ task lintClangTidy(type: Exec) {
     executable "clang-tidy"
 
     // collect all .cpp files (headers are taken from include directories)
-    def cppfiles = fileTree("src").matching { it.include("**/*.cpp") }.files.path
+    def cppFiles = fileTree("src").matching { it.include("**/*.cpp") }.files
+    def reportDir = file("${buildDir}/lint-results")
+    def report = file("${buildDir}/lint-results/clangtidy.xml")
 
+    cppFiles.each { file -> inputs.file file }
+    outputs.dir reportDir
+    outputs.file report
 
-    args cppfiles
+    args cppFiles.path
     args "-checks=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*"
     args "-warnings-as-errors=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*"
     args "-header-filter=src/.*"
@@ -133,16 +149,20 @@ task lintClangTidy(type: Exec) {
     args "-std=c++11", "-msse4", "-fPIC", "-Wall", "-O3", "-funroll-loops", "-march=native", "-mfpmath=sse"
 
     doLast { println "--- ---------- ---" }
-    // doLast { println "Linted:\n${cppfiles.join "\n"}" }
+
+    doLast {
+        reportDir.mkdirs()
+        report.createNewFile()
+    }
 }
+
+check.finalizedBy 'lintMDL'
+check.finalizedBy 'lintClangTidy'
 
 task lint {
     dependsOn 'lintMDL'
     dependsOn 'lintClangTidy'
-    shouldRunAfter 'build'
 }
-
-build.finalizedBy 'lint'
 
 task buildGoogleTest(type: Exec) {
     dependsOn 'pullDeps'
