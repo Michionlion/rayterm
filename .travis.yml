@@ -16,8 +16,7 @@ before_install:
   # add gradle bin to path at the beginning to ensure it overwrites old gradle
   - export PATH="$HOME/gradle-5.0/bin:$PATH"
   - gem install mdl
-  - which gcc
-  - which nvcc
+  - git clone git@github.com:Michionlion/optix.git $HOME/optix
 
 # install dependencies
 install:
@@ -35,7 +34,7 @@ cache:
 
 script:
   # build
-  - gradle clean --console=plain
+  - gradle clean --console=plain -Poptix_location=$HOME/optix
   # lint
   - gradle assemble --console=plain -Poptix_location=$HOME/optix
   - gradle lint --console=plain -Poptix_location=$HOME/optix
