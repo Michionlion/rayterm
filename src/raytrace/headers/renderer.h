@@ -47,13 +47,18 @@ class Renderer {
 
    public:
     Renderer(int width, int height) : width(width), height(height) {
+        std::string place = "initContext";
         try {
             initContext();
+            place = "initPrograms";
             initPrograms();
+            place = "initOptiX";
             initOptiX();
+            place = "initWorld";
             initWorld();
         } catch (const optix::Exception& ex) {
-            printf("Renderer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
+            printf("Renderer Error in %s: %d (%s)\n", place.c_str(), ex.getErrorCode(),
+                ex.getErrorString().c_str());
             exit(1);
         }
     }

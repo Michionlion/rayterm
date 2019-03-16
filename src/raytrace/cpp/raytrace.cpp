@@ -47,9 +47,6 @@ int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb
     int pixel  = 0;
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            // gamma correct outcol
-            // raise to 1 / gamma (1/2 in our case)
-
             optix::float4 sample = buffer->get(x, y);
 
             // print red

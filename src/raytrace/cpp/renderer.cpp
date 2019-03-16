@@ -20,6 +20,12 @@
 #endif
 
 void Renderer::initContext() {
+    uint32_t device_count;
+    rtDeviceGetDeviceCount(&device_count);
+    if (!device_count) {
+        fprintf(stderr, "A supported NVIDIA GPU could not be found.\n");
+        exit(1);
+    }
     context = optix::Context::create();
 
     // specify context details
