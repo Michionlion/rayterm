@@ -16,6 +16,7 @@ before_install:
   # add gradle bin to path at the beginning to ensure it overwrites old gradle
   - export PATH="$HOME/gradle-5.0/bin:$PATH"
   - gem install mdl
+  - test -d "$HOME/optix" && git -C "$HOME/optix" pull
   - test -d "$HOME/optix" || git clone --depth=1 --branch=master https://github.com/Michionlion/optix.git $HOME/optix
   - tree /opt/cuda
 
