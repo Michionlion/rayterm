@@ -9,6 +9,8 @@
 #endif
 
 TEST(RaytracerTest, Screenshot) {
+    printDeviceInfo();
+
     std::chrono::steady_clock::time_point begin, end;
     auto renderer = new Renderer(int(80 * RES_MULT), int(52 * RES_MULT));
 

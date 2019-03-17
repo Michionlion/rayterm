@@ -36,7 +36,7 @@ void Renderer::initContext() {
 
     context->setDevices(devices.begin(), devices.end());
 
-    printf("First Device: %d\n", context->getEnabledDevices()[0]);
+    printf("Using device: %d\n", context->getEnabledDevices()[0]);
 
 #if HANDLE_EXCEPTIONS
     context->setPrintEnabled(true);
@@ -97,10 +97,10 @@ void Renderer::initOptiX() {
     // set to rgba
     pixel_buffer->setFormat(RT_FORMAT_FLOAT4);
     resize(width, height);
-    context["sysOutputBuffer"]->set(pixel_buffer);  // NOLINT
+    context["sysOutputBuffer"]->set(pixel_buffer);
 
     // global shader variables
-    context["sysColorBackground"]->setFloat(1.0, 0.0, 0.0);  // NOLINT
+    context["sysColorBackground"]->setFloat(1.0, 0.0, 0.0);
 }
 
 void Renderer::initWorld() {
@@ -111,7 +111,7 @@ void Renderer::initWorld() {
     groupRoot->setAcceleration(root);
     groupRoot->setChildCount(0);
 
-    context["sysRootObject"]->set(groupRoot);  // NOLINT
+    context["sysRootObject"]->set(groupRoot);
 
     // read world description
 
