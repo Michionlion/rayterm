@@ -3,6 +3,22 @@ plugins {
     id 'google-test-test-suite'
 }
 
+// assume a path is absolute if it starts with '/', and relative to the project
+// if it does not
+def validate_project_settings() {
+    if(!optix_location.startsWith("/")) {
+        optix_location = "${projectDir.getPath()}/${optix_location}"
+    }
+    if(!cuda_location.startsWith("/")) {
+        cuda_location = "${projectDir.getPath()}/${cuda_location}"
+    }
+    if(!mdl_location.startsWith("/")) {
+        mdl_location = "${projectDir.getPath()}/${mdl_location}"
+    }
+}
+
+validate_project_settings()
+
 model {
     repositories {
         libs(PrebuiltLibraries) {
