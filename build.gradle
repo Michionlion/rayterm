@@ -18,6 +18,9 @@ def validate_project_settings() {
     if(!googletest_location.startsWith("/")) {
         googletest_location = "${projectDir.getPath()}/${googletest_location}"
     }
+    if(!gcc_path.startsWith("/")) {
+        gcc_path = "${projectDir.getPath()}/${gcc_path}"
+    }
 }
 
 validate_project_settings()
@@ -120,7 +123,7 @@ model {
     // hope gradle can find it. The path variable can help.
     toolChains {
         gcc(Gcc) {
-            // path "/usr/bin/"
+            path gcc_path
             eachPlatform { tools ->
                 tools.cppCompiler.executable = "g++-7"
             }
