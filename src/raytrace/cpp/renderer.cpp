@@ -96,7 +96,7 @@ void Renderer::initOptiX() {
     pixel_buffer = context->createBuffer(RT_BUFFER_OUTPUT);
     // set to rgba
     pixel_buffer->setFormat(RT_FORMAT_FLOAT4);
-    resize(width, height);
+    pixel_buffer->setSize(width, height);
     context["sysOutputBuffer"]->set(pixel_buffer);
 
     // global shader variables
@@ -126,6 +126,7 @@ void Renderer::resize(int width, int height) {
     this->width  = width;
     this->height = height;
     pixel_buffer->setSize(width, height);
+    camera->setViewport(width, height);
 }
 
 void Renderer::launch() {
