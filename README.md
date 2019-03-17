@@ -30,6 +30,10 @@ Additional dependencies such as [Google Test](https://github.com/google/googlete
 are vendored as submodules in this repository, and can be automatically updated
 and built by issuing `gradle deps`. This should be done before building anything.
 
+Lastly, linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint)
+and [proselint](https://github.com/amperser/proselint/) ensure documentation is well written; they
+should be installed before running `gradle lint`.
+
 ### Testing
 
 For manual rendering comparisons, [blender](https://www.blender.org/) is used.

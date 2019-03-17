@@ -4,6 +4,7 @@ dist: xenial
 # install dependencies
 install:
   - gem install mdl
+  - pip install proselint
   - source .travis-deps.sh
   - gradle deps --console=plain
 

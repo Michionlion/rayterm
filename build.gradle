@@ -169,6 +169,26 @@ task lintMDL(type: Exec) {
     }
 }
 
+task lintProselint(type: Exec) {
+    doFirst { println "--- proselint ---" }
+
+    def reportDir = file("${buildDir}/lint-results")
+    def report = file("${buildDir}/lint-results/proselint.xml")
+
+    executable "proselint"
+    args "README.md"
+
+    inputs.file file("README.md")
+    outputs.dir reportDir
+    outputs.file report
+
+    doLast { println "--- ---- ---- ---" }
+    doLast {
+        reportDir.mkdirs()
+        report.createNewFile()
+    }
+}
+
 task lintClangTidy(type: Exec) {
     doFirst { println "--- clang-tidy ---" }
 
@@ -197,20 +217,26 @@ task lintClangTidy(type: Exec) {
     args "-Isrc/raytrace/headers"
     args "-std=c++11", "-msse4", "-fPIC", "-Wall", "-O3", "-funroll-loops", "-march=native", "-mfpmath=sse"
 
-    doLast { println "--- ---------- ---" }
+    doLast { println "--- ----  ---- ---" }
 
     doLast {
         reportDir.mkdirs()
         report.createNewFile()
     }
+
+    // lint writing first -- it's faster
+    shouldRunAfter 'lintMDL'
+    shouldRunAfter 'lintProselint'
 }
 
-check.finalizedBy 'lintMDL'
 check.finalizedBy 'lintClangTidy'
+check.finalizedBy 'lintMDL'
+check.finalizedBy 'lintProselint'
 
 task lint {
-    dependsOn 'lintMDL'
     dependsOn 'lintClangTidy'
+    dependsOn 'lintMDL'
+    dependsOn 'lintProselint'
 }
 
 task buildGoogleTest(type: Exec) {
