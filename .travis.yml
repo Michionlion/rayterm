@@ -27,7 +27,9 @@ cache:
 script:
   # clean
   - gradle clean --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
-  # build
-  - gradle assemble compileCu --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
+  # build cu files
+  - gradle compileCu --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
+  # build cpp files
+  - gradle assemble --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
   # lint
   - gradle lint --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
