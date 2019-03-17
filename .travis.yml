@@ -10,6 +10,11 @@ install:
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - ls $BASE
+  - echo $GRADLE_LOCATION
+  - echo $OPTIX_LOCATION
+  - echo $CUDA_LOCATION
+  - echo $MDL_LOCATION
 cache:
   directories:
     - $HOME/.gradle/caches/
