@@ -9,9 +9,10 @@ export CUDA_LOCATION="$HOME/cuda"
 export MDL_LOCATION="$HOME/mdl"
 
 if [[ ! -d "$GRADLE_LOCATION" ]]; then
-    curl -L -o "$HOME/gradle.zip" "$GRADLE_URL"
-    unzip -d "$GRADLE_LOCATION/.." "$HOME/gradle.zip"
-    rm -rf "$HOME/gradle.zip"
+    \cd "$HOME"
+    curl -L -o "gradle.zip" "$GRADLE_URL"
+    unzip "gradle.zip"
+    rm -rf "gradle.zip"
 fi
 
 # add gradle bin to path at the beginning to ensure it overwrites old gradle
