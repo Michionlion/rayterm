@@ -31,8 +31,8 @@ are vendored as submodules in this repository, and can be automatically updated
 and built by issuing `gradle deps`. This should be done before building anything.
 
 Lastly, linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint)
-and [proselint](https://github.com/amperser/proselint/) ensure documentation is well written; they
-should be installed before running `gradle lint`.
+and [proselint](https://github.com/amperser/proselint/) ensure documentation is
+well written; they should be installed before running `gradle lint`.
 
 ### Testing
 
