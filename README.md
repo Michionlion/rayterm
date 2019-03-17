@@ -31,7 +31,7 @@ are installed manually. Notably, the OptiX and MDL `.so` libraries must be
 linkable.
 
 The `gcc` toolchain is used to compile `RayTerm`. We specifically require
-`g++-7`, and by default searches `/usr/bin/` for it.
+`g++-7`, and by default search `/usr/bin/` for it.
 
 Linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint),
 [proselint](https://github.com/amperser/proselint/), and [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)
