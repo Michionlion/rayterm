@@ -5,6 +5,7 @@ addons:
   apt:
     packages:
       - nvidia-cuda-toolkit
+      - tree
 
 
 # install build tools
