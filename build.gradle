@@ -15,6 +15,9 @@ def validate_project_settings() {
     if(!mdl_location.startsWith("/")) {
         mdl_location = "${projectDir.getPath()}/${mdl_location}"
     }
+    if(!googletest_location.startsWith("/")) {
+        googletest_location = "${projectDir.getPath()}/${googletest_location}"
+    }
 }
 
 validate_project_settings()
@@ -23,9 +26,9 @@ model {
     repositories {
         libs(PrebuiltLibraries) {
             googleTest {
-                headers.srcDirs "${google_test_location}/include"
+                headers.srcDirs "${googletest_location}/include"
                 binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile = file(projectDir.getPath() + "/${google_test_location}/build/libgtest.a")
+                    staticLibraryFile = file("${googletest_location}/build/libgtest.a")
                 }
             }
             optix {
@@ -226,7 +229,7 @@ task lintClangTidy(type: Exec) {
     args "-warnings-as-errors=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*"
     args "-header-filter=src/.*"
     args "--"
-    args "-I${google_test_location}/include"
+    args "-I${googletest_location}/include"
     args "-I${optix_location}/include"
     args "-I${cuda_location}/include"
     args "-Isrc/rayterm/headers"
@@ -258,7 +261,7 @@ task lint {
 task buildGoogleTest(type: Exec) {
     dependsOn 'pullDeps'
     shouldRunAfter 'pullDeps'
-    def gtest = "${projectDir.getPath()}/${google_test_location}"
+    def gtest = "${projectDir.getPath()}/${googletest_location}"
     doFirst { exec { commandLine "mkdir", "${gtest}/build" } }
     doFirst { exec { commandLine "rm", "-rf", "${gtest}/build" } }
     commandLine "g++", "-std=c++11", "-isystem", "${gtest}/include", "-I${gtest}", "-pthread", "-c", "${gtest}/src/gtest-all.cc", "-o", "${gtest}/build/gtest-all.o"
