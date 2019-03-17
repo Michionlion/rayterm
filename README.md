@@ -33,9 +33,10 @@ linkable.
 The `gcc` toolchain is used to compile `RayTerm`. We specifically require
 `g++-7`, and by default searches `/usr/bin/` for it.
 
-Linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint)
-and [proselint](https://github.com/amperser/proselint/) ensure documentation is
-well written; they should be installed before running `gradle lint`.
+Linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint),
+[proselint](https://github.com/amperser/proselint/), and [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)
+ensure documentation and code are well written; they should be installed before
+running `gradle lint`.
 
 #### Testing
 
