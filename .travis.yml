@@ -17,6 +17,7 @@ before_install:
   - export PATH="$HOME/gradle-5.0/bin:$PATH"
   - gem install mdl
   - git clone --depth=1 --branch=master https://github.com/Michionlion/optix.git $HOME/optix
+  - tree /opt/cuda
 
 # install dependencies
 install:
