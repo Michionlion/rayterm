@@ -41,12 +41,12 @@ done
 
 COMPILED=1
 if [[ "$FLAGS" != "" ]]; then
-    gradle installRaytraceTestReleaseGoogleTestExe $FLAGS
+    gradle installRaytraceTestReleaseGoogleTestExe compileCu $FLAGS
     COMPILED=$?
     echo "Compiled with $FLAGS"
     shift
 else
-    gradle installRaytraceTestReleaseGoogleTestExe
+    gradle installRaytraceTestReleaseGoogleTestExe compileCu
     COMPILED=$?
     echo "Compiled with default samples"
 fi
@@ -56,7 +56,7 @@ if  [[ "$COMPILED" != "0" ]]; then
 fi
 
 if [[ "$TEST" = "true" ]]; then
-    ./build/install/raytraceTest/release/raytraceTest
+    exec build/install/raytraceTest/release/raytraceTest
     exit
 fi
 
