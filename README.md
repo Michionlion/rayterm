@@ -47,9 +47,7 @@ For manual rendering comparisons, [blender](https://www.blender.org/) is used.
 `RayTerm` uses the [Gradle](https://gradle.org/) to automate compilation and
 testing. To build `RayTerm`, run the command `gradle build`. To run unit tests,
 run `gradle test`. To lint documentation and source code (where applicable),
-issue `gradle lint`.
-
-Custom scripts are also used to simplify and speed up the development process:
-`test.sh` compiles only what is needed for a `ppm` render test, and `run.sh`
-compiles the nessescary components for an `rtexplore` executable. Both are
-configurable with simple command-line arguments.
+issue `gradle lint`. Custom scripts are also used to simplify and speed up the
+development process: `test.sh` compiles only what is needed for a `ppm` render
+test, and `run.sh` compiles the nessescary components for an `rtexplore`
+executable. Both are configurable with simple command-line arguments.
