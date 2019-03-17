@@ -23,6 +23,7 @@ fi
 export PATH="$GRADLE_LOCATION/bin:$PATH"
 
 # check dependency folders (for cache), and update or clone as required
+# TODO: in the future, these should be considered for submodule status in lib/
 
 if [[ -d "$OPTIX_LOCATION" ]]; then
     git -C "$OPTIX_LOCATION" pull
