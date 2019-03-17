@@ -1,15 +1,15 @@
 # `RayTerm`
 
-![Travis CI Build Status Image](https://travis-ci.com/Michionlion/rayterm.svg?branch=master)
+## A Ray-Tracing Graphics Engine for XTerm-like Terminals
 
-A Ray-Tracing Graphics Engine for XTerm-like Terminals
+![Travis CI Build Status Image](https://travis-ci.com/Michionlion/rayterm.svg?branch=master)
 
 This repository is the GPU implementation of `RayTerm`. There is also an
 incomplete CPU implementation, available [here](https://github.com/Michionlion/rayterm-cpu).
 
-## Development
+### Development
 
-### Dependencies
+#### Dependencies
 
 `RayTerm` requires the following to compile:
 
@@ -37,11 +37,11 @@ Linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint)
 and [proselint](https://github.com/amperser/proselint/) ensure documentation is
 well written; they should be installed before running `gradle lint`.
 
-### Testing
+#### Testing
 
 For manual rendering comparisons, [blender](https://www.blender.org/) is used.
 
-### Build System
+#### Build System
 
 `RayTerm` uses the [Gradle](https://gradle.org/) to automate compilation and
 testing. To build `RayTerm`, run the command `gradle build`. To run unit tests,
