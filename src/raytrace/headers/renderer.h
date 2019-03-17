@@ -81,8 +81,6 @@ class Renderer {
 
     // launch a ray-tracing render
     void launch();
-
-    void printSystemInfo();
 };
 
 // For rtDevice*() function error checking. No OptiX context present at that time.
