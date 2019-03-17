@@ -1,43 +1,27 @@
 language: cpp
-sudo: required
 dist: xenial
-addons:
-  apt:
-    packages:
-      - nvidia-cuda-toolkit
-      - tree
-
-
-# install build tools
-before_install:
-  - wget https://services.gradle.org/distributions/gradle-5.0-bin.zip
-  - unzip -d $HOME gradle-5.0-bin.zip
-  # probably don't need this but just to be sure
-  - rm -rf gradle-5.0-bin.zip
-  # add gradle bin to path at the beginning to ensure it overwrites old gradle
-  - export PATH="$HOME/gradle-5.0/bin:$PATH"
-  - gem install mdl
-  - test -d "$HOME/optix" && git -C "$HOME/optix" pull
-  - test -d "$HOME/optix" || git clone --depth=1 --branch=master https://github.com/Michionlion/optix.git $HOME/optix
-  - tree /opt/cuda
 
 # install dependencies
 install:
+  - source .travis-deps.sh
   - gradle deps --console=plain
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/5.0
-    - $HOME/.gradle/caches/jars-3
-    - $HOME/.gradle/caches/modules-2
-    - $HOME/optix
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $GRADLE_LOCATION
+    - $OPTIX_LOCATION
+    - $CUDA_LOCATION
+    - $MDL_LOCATION
 
 script:
+  # clean
+  - gradle clean --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
   # build
-  - gradle clean --console=plain -Poptix_location=$HOME/optix
+  - gradle assemble --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
   # lint
-  - gradle assemble --console=plain -Poptix_location=$HOME/optix
-  - gradle lint --console=plain -Poptix_location=$HOME/optix
+  - gradle lint --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
