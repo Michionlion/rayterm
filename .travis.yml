@@ -3,6 +3,7 @@ dist: xenial
 
 # install dependencies
 install:
+  - gem install mdl
   - source .travis-deps.sh
   - gradle deps --console=plain
 
@@ -22,6 +23,6 @@ script:
   # clean
   - gradle clean --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
   # build
-  - gradle assemble --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
+  - gradle assemble compileCu --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
   # lint
   - gradle lint --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
