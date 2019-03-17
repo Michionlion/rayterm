@@ -21,7 +21,7 @@ incomplete CPU implementation, available [here](https://github.com/Michionlion/r
   (Installed to `/opt/mdl` by default) ([Travis Repository](https://github.com/Michionlion/mdl))
 
 The required linking and PATH additions should be made, as defined in the
-respective documentation. Notably, the the OptiX and MDL `.so` libraries must
+respective documentation. Notably, the OptiX and MDL `.so` libraries must
 be linkable. See `gradle.properties` to change the default expected installation
 locations. Travis uses the given repositories to download the needed headers,
 libraries, and binaries when building and testing this project.
