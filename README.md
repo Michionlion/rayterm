@@ -23,15 +23,16 @@ incomplete CPU implementation, available [here](https://github.com/Michionlion/r
   (Installed to `lib/googletest`)
 
 These libraries are all installed automatically by running `gradle deps`,
-although installation may take some time as many of them are large. See
-`gradle.properties` to change the default expected installation locations, if
-you wish to use system packages. Additionally, the required linking and PATH
-additions should be made, as defined in the respective documentation, if these
-are installed manually. Notably, the OptiX and MDL `.so` libraries must be
-linkable.
+although installation may take some time as many of them are large. This
+automated installation requires [git lfs](https://git-lfs.github.com/), and
+will fail without it. See `gradle.properties` to change the default expected
+installation locations, if you wish to use system packages.
 
 The `gcc` toolchain is used to compile `RayTerm`. We specifically require
-`g++-7`, and by default search `/usr/bin/` for it.
+`g++-7`, and by default search `/usr/bin/` for it. `nvcc` also requires `gcc-7`,
+and a link to it must be placed in `lib/cuda/bin`. This is taken care of
+automatically when `gradle compileCu` is run, but may need to be manually
+changed if the `gcc` installation changes.
 
 Linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint),
 [proselint](https://github.com/amperser/proselint/), and [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)
