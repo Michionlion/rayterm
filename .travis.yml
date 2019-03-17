@@ -1,5 +1,14 @@
 language: cpp
+
 dist: xenial
+os: linux
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-7
 
 # install dependencies
 install:
@@ -14,18 +23,15 @@ before_cache:
 cache:
   directories:
     - $GRADLE_LOCATION
-    - $OPTIX_LOCATION
-    - $CUDA_LOCATION
-    - $MDL_LOCATION
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
 script:
   # clean
-  - gradle clean --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
+  - gradle clean --console=plain
   # build cu files
-  - gradle compileCu --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
+  - gradle compileCu --console=plain
   # build cpp files
-  - gradle assemble --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
+  - gradle assemble --console=plain
   # lint
-  - gradle lint --console=plain -Poptix_location=$OPTIX_LOCATION -Pcuda_location=$CUDA_LOCATION -Pmdl_location=$MDL_LOCATION
+  - gradle lint --console=plain
