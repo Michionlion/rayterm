@@ -30,14 +30,17 @@ else
     git clone --depth=1 --branch=master https://github.com/Michionlion/optix.git "$OPTIX_LOCATION"
 fi
 
+
 if [[ -d "$CUDA_LOCATION" ]]; then
     git -C "$CUDA_LOCATION" pull
 else
     git clone --depth=1 --branch=master https://github.com/Michionlion/cuda.git "$CUDA_LOCATION"
 fi
+export PATH="$CUDA_LOCATION/bin:$PATH"
 
 if [[ -d "$MDL_LOCATION" ]]; then
     git -C "$MDL_LOCATION" pull
 else
     git clone --depth=1 --branch=master https://github.com/Michionlion/mdl.git "$MDL_LOCATION"
 fi
+export PATH="$MDL_LOCATION/linux-x86-64/bin:$PATH"
