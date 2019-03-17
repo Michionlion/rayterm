@@ -1,16 +1,18 @@
 #!/bin/bash
 
+export BASE="${BASE:-$HOME}"
+
 export GRADLE_VERSION="5.1"
 export GRADLE_URL="https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip"
 
-export GRADLE_LOCATION="$HOME/gradle-$GRADLE_VERSION"
-export OPTIX_LOCATION="$HOME/optix"
-export CUDA_LOCATION="$HOME/cuda"
-export MDL_LOCATION="$HOME/mdl"
+export GRADLE_LOCATION="$BASE/gradle-$GRADLE_VERSION"
+export OPTIX_LOCATION="$BASE/optix"
+export CUDA_LOCATION="$BASE/cuda"
+export MDL_LOCATION="$BASE/mdl"
 
 if [[ ! -d "$GRADLE_LOCATION" ]]; then
     (
-    \cd "$HOME" || exit
+    \cd "$BASE" || exit
     curl -L -o "gradle.zip" "$GRADLE_URL"
     unzip "gradle.zip"
     rm -rf "gradle.zip"
@@ -39,6 +41,3 @@ if [[ -d "$MDL_LOCATION" ]]; then
 else
     git clone --depth=1 --branch=master https://github.com/Michionlion/mdl.git "$MDL_LOCATION"
 fi
-
-# install linter
-gem install mdl
