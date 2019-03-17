@@ -184,7 +184,7 @@ task lintClangTidy(type: Exec) {
     outputs.file report
 
     args cppFiles.path
-    args "-checks=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*"
+    args "-checks=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*,-clang-analyzer-cplusplus.NewDelete,-clang-analyzer-cplusplus.InnerPointer,-clang-analyzer-cplusplus.NewDeleteLeaks"
     args "-warnings-as-errors=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*"
     args "-header-filter=src/.*"
     args "--"
