@@ -1,46 +1,54 @@
 # `RayTerm`
 
-![Travis CI Build Status Image](https://travis-ci.com/Michionlion/rayterm.svg?branch=master)
+## A Ray-Tracing Graphics Engine for XTerm-like Terminals
 
-A Ray-Tracing Graphics Engine for XTerm-like Terminals
+![Travis CI Build Status Image](https://travis-ci.com/Michionlion/rayterm.svg?branch=master)
 
 This repository is the GPU implementation of `RayTerm`. There is also an
 incomplete CPU implementation, available [here](https://github.com/Michionlion/rayterm-cpu).
 
-## Development
+### Development
 
-### Dependencies
+#### Dependencies
 
 `RayTerm` requires the following to compile:
 
 * [OptiX 6.0.0 SDK](http://raytracing-docs.nvidia.com/optix_6_0/index.html)
-  (Installed to `/opt/optix` by default) ([Travis Repository](https://github.com/Michionlion/optix))
+  (Installed to `lib/optix`)
 * [CUDA Toolkit 10.0](https://developer.nvidia.com/cuda-toolkit-archive)
-  (Installed to `/opt/cuda` by default) ([Travis Repository](https://github.com/Michionlion/cuda))
+  (Installed to `lib/cuda`)
 * [MDL SDK](https://developer.nvidia.com/mdl-sdk)
-  (Installed to `/opt/mdl` by default) ([Travis Repository](https://github.com/Michionlion/mdl))
+  (Installed to `lib/mdl`)
+* [GoogleTest](https://github.com/google/googletest)
+  (Installed to `lib/googletest`)
 
-The required linking and PATH additions should be made, as defined in the
-respective documentation. Notably, the OptiX and MDL `.so` libraries must
-be linkable. See `gradle.properties` to change the default expected installation
-locations. Travis uses the given repositories to download the needed headers,
-libraries, and binaries when building and testing this project.
+These libraries are all installed automatically by running `gradle deps`,
+although installation may take some time as many of them are large. This
+automated installation requires [git lfs](https://git-lfs.github.com/), and
+will fail without it. See `gradle.properties` to change the default expected
+installation locations, if you wish to use system packages.
 
-Additional dependencies such as [Google Test](https://github.com/google/googletest)
-are vendored as submodules in this repository, and can be automatically updated
-and built by issuing `gradle deps`. This should be done before building anything.
+The `gcc` toolchain is used to compile `RayTerm`. We specifically require
+`g++-7`, and by default search `/usr/bin/` for it. `nvcc` also requires `gcc-7`,
+and a link to it must be placed in `lib/cuda/bin`. This is taken care of
+automatically when `gradle compileCu` is run, but may need to be manually
+changed if the `gcc` installation changes.
 
-Lastly, linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint)
-and [proselint](https://github.com/amperser/proselint/) ensure documentation is
-well written; they should be installed before running `gradle lint`.
+Linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint),
+[proselint](https://github.com/amperser/proselint/), and [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)
+ensure documentation and code are well written; they should be installed before
+running `gradle lint`.
 
-### Testing
+#### Testing
 
 For manual rendering comparisons, [blender](https://www.blender.org/) is used.
 
-### Build System
+#### Build System
 
 `RayTerm` uses the [Gradle](https://gradle.org/) to automate compilation and
 testing. To build `RayTerm`, run the command `gradle build`. To run unit tests,
 run `gradle test`. To lint documentation and source code (where applicable),
-issue `gradle lint`.
+issue `gradle lint`. Custom scripts are also used to simplify and speed up the
+development process: `test.sh` compiles only what is needed for a `ppm` render
+test, and `run.sh` compiles the nessescary components for an `rtexplore`
+executable. Both are configurable with simple command-line arguments.
