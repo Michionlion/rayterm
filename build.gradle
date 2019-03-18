@@ -171,7 +171,7 @@ task compileCu() {
                 executable "${cuda_location}/bin/nvcc"
                 args "-I${optix_location}/include"
                 args "-I${cuda_location}/include"
-                args "-ptx", "-o", dest
+                args "-ptx", "-o", dest, "-std=c++11"
                 args file.path
             }
         }
