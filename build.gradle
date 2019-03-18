@@ -286,14 +286,21 @@ task buildGoogleTest(type: Exec) {
     }
 }
 
+task buildCuda(type: Exec) {
+    dependsOn 'pullDeps'
+    shouldRunAfter 'pullDeps'
+    executable "${cuda_location}/build.sh"
+}
+
 task pullDeps(type: Exec) {
     doFirst { println 'Updating dependencies' }
-    commandLine 'git', 'submodule', 'update', '--init', '--recursive'
+    commandLine 'git', 'submodule', 'update', '--init', '--recursive', '--remote', '--merge'
 }
 
 task deps {
     dependsOn 'pullDeps'
     dependsOn 'buildGoogleTest'
+    dependsOn 'buildCuda'
 }
 
 // install the rayterm.so library
