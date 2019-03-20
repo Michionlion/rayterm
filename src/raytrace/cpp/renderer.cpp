@@ -1,4 +1,6 @@
 #include "renderer.h"
+#include <optix.h>
+#include <optix_world.h>
 #include <iostream>
 #include <string>
 #include <vector>

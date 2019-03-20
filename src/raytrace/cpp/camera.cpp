@@ -1,4 +1,6 @@
 #include "camera.h"
+#include <optix.h>
+#include <optix_world.h>
 #include <cmath>
 
 void Camera::setViewport(int w, int h) {

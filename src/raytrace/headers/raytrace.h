@@ -1,6 +1,8 @@
 #ifndef _RAYTERM_RAYTRACER_H_
 #define _RAYTERM_RAYTRACER_H_
 
+#include <optix.h>
+#include <optix_world.h>
 #include "renderer.h"
 
 // parameters are (complete, total)

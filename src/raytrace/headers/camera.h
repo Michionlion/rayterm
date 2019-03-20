@@ -2,8 +2,9 @@
 #define _RAYTERM_CAMERA_H_
 
 #include <optix.h>
-#include <optixu/optixpp_namespace.h>
-#include <optixu/optixu_math_namespace.h>
+#include <optix_world.h>
+// #include <optixu/optixpp_namespace.h>
+// #include <optixu/optixu_math_namespace.h>
 
 class Camera {
     int width;
