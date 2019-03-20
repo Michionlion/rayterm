@@ -89,7 +89,7 @@ class Renderer {
         RTresult code = func;                                                              \
         if (code != RT_SUCCESS) {                                                          \
             const char* msg;                                                               \
-            rtContextGetErrorString(NULL, code, &msg);                                     \
+            rtContextGetErrorString(nullptr, code, &msg);                                  \
             std::cerr << "ERROR " << msg << " (" << code << ") in " << #func << std::endl; \
         }                                                                                  \
     } while (0)
@@ -104,7 +104,7 @@ static void printDeviceInfo() {
     RTresult code = rtDeviceGetDeviceCount(&device_count);
     if (device_count <= 0 || code != RT_SUCCESS) {
         const char* msg;
-        rtContextGetErrorString(NULL, code, &msg);
+        rtContextGetErrorString(nullptr, code, &msg);
         fprintf(stderr, "A supported NVIDIA GPU could not be found\nError: %s (%i)\n", msg, code);
         exit(1);
     } else {
@@ -132,11 +132,11 @@ static void printDeviceInfo() {
             i, RT_DEVICE_ATTRIBUTE_TCC_DRIVER, sizeof(tcc_driver), &tcc_driver));
         RT_CHECK_ERROR(rtDeviceGetAttribute(
             i, RT_DEVICE_ATTRIBUTE_CUDA_DEVICE_ORDINAL, sizeof(cuda_device), &cuda_device));
-        fprintf(stderr,
-            "Device %u:\n  %s with %u multiprocessors\n  %u threads per block\n  "
-            "%u kHz\n  %lu bytes global memory\n  %u hardware textures\n  "
-            "compute capability %u.%u\n  timeout %sabled\n  "
-            "Tesla compute cluster driver %sabled\n  cuda device %u\n",
+        printf(
+            "  Device %u: %s with:\n    %u multiprocessors\n    %u threads per block\n    "
+            "%u kHz\n    %lu bytes global memory\n    %u hardware textures\n    "
+            "compute capability %u.%u\n    timeout %sabled\n    "
+            "Tesla compute cluster driver %sabled\n    cuda device %u\n",
             i, device_name, multiprocessor_count, threads_per_block, clock_rate, memory_size,
             texture_count, compute_capability[0], compute_capability[1],
             timeout_enabled ? "en" : "dis", tcc_driver ? "en" : "dis", cuda_device);
