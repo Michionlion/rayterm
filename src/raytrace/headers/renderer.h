@@ -62,7 +62,7 @@ class Renderer {
         } catch (const optix::Exception& ex) {
             printf("Renderer Error in %s: %d (%s)\n", place.c_str(), ex.getErrorCode(),
                 ex.getErrorString().c_str());
-            exit(1);
+            throw std::runtime_error("Renderer Error");
         }
     }
     ~Renderer() {
@@ -106,7 +106,7 @@ static void printDeviceInfo() {
         const char* msg;
         rtContextGetErrorString(nullptr, code, &msg);
         fprintf(stderr, "A supported NVIDIA GPU could not be found\nError: %s (%i)\n", msg, code);
-        exit(1);
+        throw std::runtime_error("No GPU found");
     } else {
         printf("Found %i devices:\n", device_count);
     }

@@ -23,10 +23,12 @@
 
 void Renderer::initContext() {
     uint32_t device_count;
-    rtDeviceGetDeviceCount(&device_count);
-    if (!device_count) {
-        fprintf(stderr, "A supported NVIDIA GPU could not be found.\n");
-        exit(1);
+    RTresult code = rtDeviceGetDeviceCount(&device_count);
+    if (device_count <= 0 || code != RT_SUCCESS) {
+        const char* msg;
+        rtContextGetErrorString(nullptr, code, &msg);
+        fprintf(stderr, "A supported NVIDIA GPU could not be found\nError: %s (%i)\n", msg, code);
+        throw std::runtime_error("No GPU found");
     }
     context = optix::Context::create();
 
@@ -75,22 +77,19 @@ void Renderer::initOptiX() {
 
     std::map<std::string, optix::Program>::const_iterator it = programs.find("raygen");
     if (it == programs.end()) {
-        printf("Error: could not find required 'raygen' ptx program\n");
-        exit(1);
+        throw std::runtime_error("Error: could not find required 'raygen' ptx program");
     }
     context->setRayGenerationProgram(0, it->second);
 
     it = programs.find("exception");
     if (it == programs.end()) {
-        printf("Error: could not find required 'exception' ptx program\n");
-        exit(1);
+        throw std::runtime_error("Error: could not find required 'exception' ptx program");
     }
     context->setExceptionProgram(0, it->second);
 
     it = programs.find("miss_gradient");
     if (it == programs.end()) {
-        printf("Error: could not find required 'miss_gradient' ptx program\n");
-        exit(1);
+        throw std::runtime_error("Error: could not find required 'miss_gradient' ptx program");
     }
     context->setMissProgram(0, it->second);
 

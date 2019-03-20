@@ -17,7 +17,7 @@ ObjFile* loadObj(const char* objfile) {
     }
 
     if (!ret) {
-        exit(1);
+        throw std::runtime_error("tinyobj::LoadObj failed");
     }
 
     // Loop over shapes
