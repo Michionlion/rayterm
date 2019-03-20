@@ -4,6 +4,8 @@
 
 # Build directories
 /build/
+/lib/tinyobjloader/*
+
 
 # Gradle
 

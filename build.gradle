@@ -18,6 +18,9 @@ def validate_project_settings() {
     if(!googletest_location.startsWith("/")) {
         googletest_location = "${projectDir.getPath()}/${googletest_location}"
     }
+    if(!tinyobjloader_location.startsWith("/")) {
+        tinyobjloader_location = "${projectDir.getPath()}/${tinyobjloader_location}"
+    }
     if(!gcc_path.startsWith("/")) {
         gcc_path = "${projectDir.getPath()}/${gcc_path}"
     }
@@ -49,21 +52,28 @@ model {
                     staticLibraryFile = file("${cuda_location}/lib64/libcudart_static.a")
                 }
             }
+            tinyobjloader {
+                headers.srcDirs "${tinyobjloader_location}"
+            }
         }
     }
     components {
         raytrace(NativeLibrarySpec) {
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
             sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
+
         }
         rayterm(NativeLibrarySpec) {
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
             sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
             sources.cpp.lib library: 'raytrace', linkage: internal_link_type
         }
         rtexplore(NativeExecutableSpec) {
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
             sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
             sources.cpp.lib library: 'raytrace', linkage: internal_link_type
             sources.cpp.lib library: "rayterm", linkage: internal_link_type
         }
@@ -74,13 +84,15 @@ model {
             sources.cpp.source.srcDir "src/raytrace/test"
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
             sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
         }
         raytermTest(GoogleTestTestSuiteSpec) {
             testing $.components.raytrace
             sources.cpp.source.srcDir "src/rayterm/test"
-            sources.cpp.lib library: 'raytrace', linkage: internal_link_type
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
             sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
+            sources.cpp.lib library: 'raytrace', linkage: internal_link_type
         }
     }
     binaries {
@@ -292,9 +304,16 @@ task buildCuda(type: Exec) {
     executable "${cuda_location}/build.sh"
 }
 
+task pullTinyObjLoader(type: Download) {
+    doFirst { file(tinyobjloader_location).mkdirs() }
+    src = 'https://github.com/syoyo/tinyobjloader/releases/latest/download/tiny_obj_loader.h'
+    target = file("${tinyobjloader_location}/tiny_obj_loader.h")
+}
+
 task pullDeps(type: Exec) {
     doFirst { println 'Updating dependencies' }
     commandLine 'git', 'submodule', 'update', '--init', '--recursive', '--remote', '--merge'
+    dependsOn 'pullTinyObjLoader'
 }
 
 task deps {
@@ -319,4 +338,16 @@ tasks.withType(RunTestExecutable) { task ->
     tasks.test.dependsOn task
     // this may mess up other things
     mustRunAfter "clean"
+}
+
+class Download extends DefaultTask {
+    @Input
+    String src
+    @OutputFile
+    File target
+    @TaskAction
+    void download() {
+        println "Downloading '$src' to '$target'"
+        ant.get(src: src, dest: target)
+    }
 }
