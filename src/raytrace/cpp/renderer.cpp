@@ -96,7 +96,7 @@ void Renderer::initOptiX() {
     // create pixel buffer
     pixel_buffer = context->createBuffer(RT_BUFFER_OUTPUT);
     // set to rgba
-    pixel_buffer->setFormat(RT_FORMAT_FLOAT4);
+    pixel_buffer->setFormat(RT_FORMAT_UNSIGNED_BYTE4);
     pixel_buffer->setSize(width, height);
     context["sysOutputBuffer"]->set(pixel_buffer);
 

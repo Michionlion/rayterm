@@ -13,13 +13,13 @@ class PixelBuffer {
     optix::Buffer backing_buffer;
 
    public:
-    optix::float4* data;
+    optix::uchar4* data;
     RTsize width, height;
 
     explicit PixelBuffer(optix::Buffer buffer) {
         backing_buffer = buffer;
         buffer->getSize(width, height);
-        data = static_cast<optix::float4*>(backing_buffer->map(0, RT_BUFFER_MAP_READ));
+        data = static_cast<optix::uchar4*>(backing_buffer->map(0, RT_BUFFER_MAP_READ));
     }
 
     ~PixelBuffer() {
@@ -30,7 +30,7 @@ class PixelBuffer {
         }
     }
 
-    const optix::float4& get(int x, int y) const { return data[y * width + x]; }
+    const optix::uchar4& get(int x, int y) const { return data[y * width + x]; }
 };
 
 class Renderer {
