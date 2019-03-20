@@ -84,45 +84,54 @@ class Renderer {
 };
 
 // For rtDevice*() function error checking. No OptiX context present at that time.
-#define RT_CHECK_ERROR_NO_CONTEXT(func)                            \
-    do {                                                           \
-        RTresult code = func;                                      \
-        if (code != RT_SUCCESS)                                    \
-            std::cerr << "ERROR: Function " << #func << std::endl; \
+#define RT_CHECK_ERROR(func)                                                               \
+    do {                                                                                   \
+        RTresult code = func;                                                              \
+        if (code != RT_SUCCESS) {                                                          \
+            const char* msg;                                                               \
+            rtContextGetErrorString(NULL, code, &msg);                                     \
+            std::cerr << "ERROR " << msg << " (" << code << ") in " << #func << std::endl; \
+        }                                                                                  \
     } while (0)
 
 static void printDeviceInfo() {
-    unsigned int version, device_count, i, multiprocessor_count, threads_per_block, clock_rate,
+    unsigned int device_count, i, multiprocessor_count, threads_per_block, clock_rate,
         texture_count, timeout_enabled, tcc_driver, cuda_device;
     unsigned int compute_capability[2];
     char device_name[128];
     RTsize memory_size;
 
-    rtGetVersion(&version);
-    rtDeviceGetDeviceCount(&device_count);
-    if (!device_count) {
-        fprintf(stderr, "A supported NVIDIA GPU could not be found for OptiX %i.\n", version);
+    RTresult code = rtDeviceGetDeviceCount(&device_count);
+    if (device_count <= 0 || code != RT_SUCCESS) {
+        const char* msg;
+        rtContextGetErrorString(NULL, code, &msg);
+        fprintf(stderr, "A supported NVIDIA GPU could not be found\nError: %s (%i)\n", msg, code);
         exit(1);
+    } else {
+        printf("Found %i devices:\n", device_count);
     }
 
     for (i = 0; i < device_count; i++) {
-        rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_NAME, sizeof(device_name), &device_name);
-        rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,
-            sizeof(multiprocessor_count), &multiprocessor_count);
-        rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
-            sizeof(threads_per_block), &threads_per_block);
-        rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_CLOCK_RATE, sizeof(clock_rate), &clock_rate);
-        rtDeviceGetAttribute(
-            i, RT_DEVICE_ATTRIBUTE_TOTAL_MEMORY, sizeof(memory_size), &memory_size);
-        rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_MAX_HARDWARE_TEXTURE_COUNT,
-            sizeof(texture_count), &texture_count);
-        rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY, sizeof(compute_capability),
-            &compute_capability);
-        rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_EXECUTION_TIMEOUT_ENABLED,
-            sizeof(timeout_enabled), &timeout_enabled);
-        rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_TCC_DRIVER, sizeof(tcc_driver), &tcc_driver);
-        rtDeviceGetAttribute(
-            i, RT_DEVICE_ATTRIBUTE_CUDA_DEVICE_ORDINAL, sizeof(cuda_device), &cuda_device);
+        RT_CHECK_ERROR(
+            rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_NAME, sizeof(device_name), &device_name));
+        RT_CHECK_ERROR(rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT,
+            sizeof(multiprocessor_count), &multiprocessor_count));
+        RT_CHECK_ERROR(rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
+            sizeof(threads_per_block), &threads_per_block));
+        RT_CHECK_ERROR(rtDeviceGetAttribute(
+            i, RT_DEVICE_ATTRIBUTE_CLOCK_RATE, sizeof(clock_rate), &clock_rate));
+        RT_CHECK_ERROR(rtDeviceGetAttribute(
+            i, RT_DEVICE_ATTRIBUTE_TOTAL_MEMORY, sizeof(memory_size), &memory_size));
+        RT_CHECK_ERROR(rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_MAX_HARDWARE_TEXTURE_COUNT,
+            sizeof(texture_count), &texture_count));
+        RT_CHECK_ERROR(rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY,
+            sizeof(compute_capability), &compute_capability));
+        RT_CHECK_ERROR(rtDeviceGetAttribute(i, RT_DEVICE_ATTRIBUTE_EXECUTION_TIMEOUT_ENABLED,
+            sizeof(timeout_enabled), &timeout_enabled));
+        RT_CHECK_ERROR(rtDeviceGetAttribute(
+            i, RT_DEVICE_ATTRIBUTE_TCC_DRIVER, sizeof(tcc_driver), &tcc_driver));
+        RT_CHECK_ERROR(rtDeviceGetAttribute(
+            i, RT_DEVICE_ATTRIBUTE_CUDA_DEVICE_ORDINAL, sizeof(cuda_device), &cuda_device));
         fprintf(stderr,
             "Device %u:\n  %s with %u multiprocessors\n  %u threads per block\n  "
             "%u kHz\n  %lu bytes global memory\n  %u hardware textures\n  "
