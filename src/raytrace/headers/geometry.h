@@ -26,6 +26,7 @@ class Mesh {
 
 class Resources {
     optix::Context context;
+    Programs* programs;
 
     Mesh** meshes   = nullptr;
     int meshes_size = 0;
@@ -33,7 +34,8 @@ class Resources {
     std::vector<optix::Material> materials;
 
    public:
-    explicit Resources(const optix::Context& context) : context(context){};
+    explicit Resources(const optix::Context& context, const Programs* programs)
+        : context(context), programs(programs){};
     ~Resources() {
         try {
             for (int i = 0; i < meshes_size; i++) {
