@@ -1,6 +1,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 
-#include "geometry.h"
+#include "resources.h"
 #include <optix.h>
 #include <optix_world.h>
 #include <exception>

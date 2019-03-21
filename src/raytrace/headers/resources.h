@@ -1,5 +1,5 @@
-#ifndef _RAYTERM_GEOMETRY_H_
-#define _RAYTERM_GEOMETRY_H_
+#ifndef _RAYTERM_resources.h_
+#define _RAYTERM_resources .h_
 
 #include <optix.h>
 #include <optix_world.h>
