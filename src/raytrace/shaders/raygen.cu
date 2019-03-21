@@ -31,9 +31,9 @@ rtDeclareVariable(float3, sysCameraW, , );
 // exposure + simple Reinhard tonemapper + gamma
 RT_FUNCTION uchar4 display(float3 val) {
     // clamp
-    val.x = fminf(fmaxf(val.x, 0.0f), 1.0f);
-    val.y = fminf(fmaxf(val.y, 0.0f), 1.0f);
-    val.z = fminf(fmaxf(val.z, 0.0f), 1.0f);
+    // val.x = fminf(fmaxf(val.x, 0.0f), 1.0f);
+    // val.y = fminf(fmaxf(val.y, 0.0f), 1.0f);
+    // val.z = fminf(fmaxf(val.z, 0.0f), 1.0f);
 
     // do tonemap
     // val *= 1.0f;
