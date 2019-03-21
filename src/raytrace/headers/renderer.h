@@ -39,8 +39,6 @@ class Renderer {
     optix::Context context;
     optix::Buffer pixel_buffer;
 
-    std::map<std::string, optix::Program> programs;
-
     void initContext();
     void initPrograms();
     void initOptiX();
@@ -48,6 +46,7 @@ class Renderer {
 
    public:
     Camera* camera;
+    Programs* programs;
 
     Renderer(int width, int height) : width(width), height(height) {
         std::string place = "initContext";
@@ -69,11 +68,14 @@ class Renderer {
         // destroy context
         try {
             delete camera;
+            delete programs;
             context->destroy();
         } catch (const optix::Exception& ex) {
             printf("~Renderer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
         }
     }
+
+    optix::Context getContext() { return context; }
 
     void resize(int width, int height);
 
