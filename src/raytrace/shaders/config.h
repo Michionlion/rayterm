@@ -18,7 +18,7 @@
 #include <optixu/optixu_math_namespace.h>
 
 #ifndef RT_FUNCTION
-#define RT_FUNCTION __forceinline__ __device__
+#define RT_FUNCTION __inline__ __device__
 #endif
 
 #endif
