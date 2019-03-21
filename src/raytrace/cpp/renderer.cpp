@@ -9,7 +9,7 @@
 #include "resources.h"
 
 #define HANDLE_EXCEPTIONS 1
-#define STACK_SIZE 1024
+#define TRACE_DEPTH 7
 
 void Renderer::initContext() {
     uint32_t device_count;
@@ -20,10 +20,17 @@ void Renderer::initContext() {
         fprintf(stderr, "A supported NVIDIA GPU could not be found\nError: %s (%i)\n", msg, code);
         throw std::runtime_error("No GPU found");
     }
+    const int RTX = true;
+    if (rtGlobalSetAttribute(RT_GLOBAL_ATTRIBUTE_ENABLE_RTX, sizeof(RTX), &RTX) != RT_SUCCESS) {
+        fprintf(stderr, "Error setting RTX mode\n");
+    } else {
+        printf("OptiX RTX execution mode is %s\n", (RTX) ? "on" : "off");
+    }
+
     context = optix::Context::create();
 
     // specify context details
-    context->setStackSize(STACK_SIZE);
+    context->setMaxTraceDepth(TRACE_DEPTH);
 
     std::vector<int> devices;
     devices.push_back(0);
