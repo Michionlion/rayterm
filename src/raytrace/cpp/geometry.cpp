@@ -118,6 +118,83 @@ int Resources::loadMatFile(std::string matfile) {
 
     return addMaterial(material);
 }
+
+optix::GeometryInstance Resources::createGeometryInstance(int mesh_id, int mat_id) {
+    Mesh* mesh = getMesh(mesh_id);
+
+    int num_verts = mesh->attrib.vertices.size();
+    int num_norms = mesh->attrib.normals.size();
+    // FIXME: assumes one shape
+    int num_tris = mesh->shapes[0].mesh.num_face_vertices.size();
+
+    optix::Buffer vbuf = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3, num_verts);
+    optix::Buffer nbuf = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3, num_norms);
+    optix::Buffer vidx = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3, num_tris);
+    optix::Buffer nidx = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3, num_tris);
+
+    auto vbuf_data = static_cast<optix::float3*>(vbuf->map());
+    auto nbuf_data = static_cast<optix::float3*>(nbuf->map());
+    auto vidx_data = static_cast<optix::uint3*>(vidx->map());
+    auto nidx_data = static_cast<optix::uint3*>(nidx->map());
+
+    // clang-format off
+    for (int i = 0; i < num_verts; i++) {
+        vbuf_data[i] = optix::make_float3(
+            mesh->attrib.vertices[3 * i + 0],
+            mesh->attrib.vertices[3 * i + 1],
+            mesh->attrib.vertices[3 * i + 2]
+        );
+    }
+
+    for (int i = 0; i < num_norms; i++) {
+        nbuf_data[i] = optix::make_float3(
+            mesh->attrib.normals[3 * i + 0],
+            mesh->attrib.normals[3 * i + 1],
+            mesh->attrib.normals[3 * i + 2]
+        );
+    }
+
+    for (int i = 0; i < num_tris; i++) {
+        vidx_data[i] = optix::make_uint3(
+            mesh->shapes[0].mesh.indices[3 * i + 0].vertex_index,
+            mesh->shapes[0].mesh.indices[3 * i + 1].vertex_index,
+            mesh->shapes[0].mesh.indices[3 * i + 2].vertex_index
+        );
+    }
+    for (int i = 0; i < num_tris; i++) {
+        nidx_data[i] = optix::make_uint3(
+            mesh->shapes[0].mesh.indices[3 * i + 0].normal_index,
+            mesh->shapes[0].mesh.indices[3 * i + 1].normal_index,
+            mesh->shapes[0].mesh.indices[3 * i + 2].normal_index
+        );
+    }
+    // clang-format on
+
+    vbuf->unmap();
+    nbuf->unmap();
+    vidx->unmap();
+    nidx->unmap();
+
+    // create GeometryTriangles
+    optix::GeometryTriangles triangles = context->createGeometryTriangles();
+
+    triangles->setPrimitiveCount(num_tris);
+    triangles->setVertices(num_verts, vbuf, RT_FORMAT_FLOAT3);
+    triangles->setTriangleIndices(vidx, RT_FORMAT_UNSIGNED_INT3);
+
+    // create GeometryInstance
+    optix::GeometryInstance instance = context->createGeometryInstance();
+    instance->setGeometryTriangles(triangles);
+    instance->setMaterialCount(1);
+    instance->setMaterial(0u, getMaterial(mat_id));
+
+    // set variables not declared in GeometryTriangles
+    instance["varNormals"]->set(nbuf);
+    instance["varNormalIndices"]->set(nidx);
+
+    return instance;
+}
+
 // // Loop over shapes
 // for (auto shape : shapes) {
 //     // Loop over faces(polygon)
