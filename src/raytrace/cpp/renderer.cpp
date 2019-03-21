@@ -8,19 +8,6 @@
 #define HANDLE_EXCEPTIONS 1
 #define STACK_SIZE 1024
 
-// PROGRAM_DIRECTORY is a directory to look in for .ptx files
-// I assume if no directory is given, the directory is build/ptx
-#ifndef PROGRAM_DIRECTORY
-#define PROGRAM_DIRECTORY "build/ptx"
-#endif
-
-// PROGRAM_LIST is a string array literal of .ptx file names
-// I assume that if no list is given, exception and raygen exist
-#ifndef PROGRAM_LIST
-#define PROGRAM_LIST \
-    { "exception", "raygen" }
-#endif
-
 void Renderer::initContext() {
     uint32_t device_count;
     RTresult code = rtDeviceGetDeviceCount(&device_count);

@@ -156,11 +156,6 @@ def getPTXFolder() {
 
 def setCuArgs(cppCompiler) {
     cppCompiler.define "PROGRAM_DIRECTORY", "\"${getPTXFolder().path}\""
-
-    def files = []
-    getCuFiles().each { file -> files.add("\"${file.name - ~/\.cu$/}\"") }
-
-    cppCompiler.define "PROGRAM_LIST", "{${files.join ", "}}"
 }
 
 task compileCu() {
