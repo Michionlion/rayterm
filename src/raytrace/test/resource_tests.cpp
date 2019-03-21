@@ -40,7 +40,7 @@ TEST(GeometryTest, GeometryInstance) {
     int mesh_id = resources.loadObjFile("monkey.obj");
     int mat_id  = resources.loadMatFile("diffuse.mat");
 
-    optix::GeometryInstance instance = resources.createGeometryInstance(mesh_id, mat_id);
+    optix::GeometryInstance instance = resources.createGeometryGroup(mesh_id, mat_id)->getChild(0);
 
     int num_vars = instance->getVariableCount();
     EXPECT_EQ(num_vars, 2) << "Did not load normal buffer variables";
