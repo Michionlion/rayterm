@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
+#include <optix.h>
+#include <optix_world.h>
 #include <cstdio>
 #include "geometry.h"
 #include "renderer.h"
 
 TEST(GeometryTest, ObjLoad) {
     auto renderer = new Renderer(80, 52);
-    Resources resources(renderer->getContext());
+    Resources resources(renderer->getContext(), renderer->programs);
 
     int id = resources.loadObjFile("monkey.obj");
 
@@ -17,11 +19,11 @@ TEST(GeometryTest, ObjLoad) {
 
 TEST(GeometryTest, MatLoad) {
     auto renderer = new Renderer(80, 52);
-    Resources resources(renderer->getContext());
+    Resources resources(renderer->getContext(), renderer->programs);
 
     int mat_id = resources.loadMatFile("diffuse.mat");
 
-    Material* mat = resources.getMaterial(mat_id);
+    optix::Material mat = resources.getMaterial(mat_id);
 
     int num_vars = mat->getVariableCount();
     EXPECT_EQ(num_vars, 2) << "Loaded incorrect number of variables";
