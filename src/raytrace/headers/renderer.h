@@ -6,8 +6,8 @@
 #include <map>
 #include <string>
 #include "camera.h"
-#include "geometry.h"
 #include "programs.h"
+#include "resources.h"
 
 // When using a PixelBuffer, you MUST call `delete buffer;` after you've finished.
 // This will unmap the memory, which is required before another launch.

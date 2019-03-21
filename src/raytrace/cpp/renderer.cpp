@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include "build_variables.h"
-#include "geometry.h"
 #include "programs.h"
+#include "resources.h"
 
 #define HANDLE_EXCEPTIONS 1
 #define STACK_SIZE 1024

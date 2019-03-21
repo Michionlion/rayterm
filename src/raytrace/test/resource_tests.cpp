@@ -2,8 +2,8 @@
 #include <optix.h>
 #include <optix_world.h>
 #include <cstdio>
-#include "geometry.h"
 #include "renderer.h"
+#include "resources.h"
 
 TEST(GeometryTest, ObjLoad) {
     auto renderer = new Renderer(80, 52);
