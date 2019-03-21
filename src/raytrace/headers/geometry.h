@@ -5,6 +5,7 @@
 #include <optix_world.h>
 #include <cstdlib>
 #include <vector>
+#include "programs.h"
 #include "tiny_obj_loader.h"
 
 // Code here is roughly inspired from OptiXMesh in the OptiX samples

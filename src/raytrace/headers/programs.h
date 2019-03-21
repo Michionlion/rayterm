@@ -4,13 +4,12 @@
 #include <optix.h>
 #include <optix_world.h>
 #include <cstdio>
+#include <map>
 #include <string>
-
-typedef std::map<std::string, optix::Program> ProgramMap;
 
 class Programs {
     optix::Context context;
-    ProgramMap program_map;
+    std::map<std::string, optix::Program> program_map;
 
    public:
     explicit Programs(const optix::Context& context) : context(context){};

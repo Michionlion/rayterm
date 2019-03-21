@@ -4,6 +4,7 @@
 #include <optix.h>
 #include <optix_world.h>
 #include <cstdio>
+#include <map>
 #include <string>
 
 bool Programs::load(const char* file, const char* func, const char* id) {
