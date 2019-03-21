@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "build_variables.h"
 
 #define HANDLE_EXCEPTIONS 1
 #define STACK_SIZE 1024
@@ -37,20 +38,12 @@ void Renderer::initContext() {
 }
 
 void Renderer::initPrograms() {
-    std::vector<std::string> program_names = std::vector<std::string> PROGRAM_LIST;
+    programs = new Programs(context);
 
-    for (const auto& name : program_names) {
-        std::string path =
-            std::string(PROGRAM_DIRECTORY) + std::string("/") + name + std::string(".ptx");
-        try {
-            programs[name] = context->createProgramFromPTXFile(path, name);
-            printf("Compiled '%s' to '%s'\n", path.c_str(), name.c_str());
-            programs[name]->validate();
-        } catch (optix::Exception& ex) {
-            printf("Error compiling '%s': %d (%s)\n", name.c_str(), ex.getErrorCode(),
-                ex.getErrorString().c_str());
-        }
-    }
+    // load special programs
+    programs.load("pinhole_camera", "raygen", "global_raygen");
+    programs.load("exception", "exception", "global_exception");
+    programs.load("misses", "miss_gradient", "global_miss");
 }
 
 void Renderer::initOptiX() {
@@ -59,26 +52,10 @@ void Renderer::initOptiX() {
     context->setRayTypeCount(1);
 
     // set programs
-    // context->setRayGenerationProgram(0, programs["raygen"]);
-    // context->setExceptionProgram(0, programs["exception"]);
 
-    std::map<std::string, optix::Program>::const_iterator it = programs.find("raygen");
-    if (it == programs.end()) {
-        throw std::runtime_error("Error: could not find required 'raygen' ptx program");
-    }
-    context->setRayGenerationProgram(0, it->second);
-
-    it = programs.find("exception");
-    if (it == programs.end()) {
-        throw std::runtime_error("Error: could not find required 'exception' ptx program");
-    }
-    context->setExceptionProgram(0, it->second);
-
-    it = programs.find("miss_gradient");
-    if (it == programs.end()) {
-        throw std::runtime_error("Error: could not find required 'miss_gradient' ptx program");
-    }
-    context->setMissProgram(0, it->second);
+    context->setRayGenerationProgram(0, programs.get("global_raygen"));
+    context->setExceptionProgram(0, programs.get("global_exception"));
+    context->setMissProgram(0, programs.get("global_miss"));
 
     // create pixel buffer
     pixel_buffer = context->createBuffer(RT_BUFFER_OUTPUT);
