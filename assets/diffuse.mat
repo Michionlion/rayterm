@@ -3,6 +3,8 @@ closest:diffuse,closest_hit,0
 # closest:diffuse,closest_hit,1
 # Define any hit program
 any:diffuse,any_hit,0
-# any:diffuse,any_hit,1 
+# any:diffuse,any_hit,1
+# Define attribute program
+# attrib:diffuse,triangle_attributes
 # Define any variables
 var:float3,varColor,0.5232,0.53121,0.9942
