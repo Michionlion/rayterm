@@ -43,9 +43,9 @@ void Renderer::initPrograms() {
     programs = new Programs(context);
 
     // load special programs
-    programs.load("pinhole_camera", "raygen", "global_raygen");
-    programs.load("exception", "exception", "global_exception");
-    programs.load("misses", "miss_gradient", "global_miss");
+    programs->load("pinhole_camera", "raygen", "global_raygen");
+    programs->load("exception", "exception", "global_exception");
+    programs->load("misses", "miss_gradient", "global_miss");
 }
 
 void Renderer::initOptiX() {
@@ -55,9 +55,9 @@ void Renderer::initOptiX() {
 
     // set programs
 
-    context->setRayGenerationProgram(0, programs.get("global_raygen"));
-    context->setExceptionProgram(0, programs.get("global_exception"));
-    context->setMissProgram(0, programs.get("global_miss"));
+    context->setRayGenerationProgram(0, programs->get("global_raygen"));
+    context->setExceptionProgram(0, programs->get("global_exception"));
+    context->setMissProgram(0, programs->get("global_miss"));
 
     // create pixel buffer
     pixel_buffer = context->createBuffer(RT_BUFFER_OUTPUT);
