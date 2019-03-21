@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
 #include <cstdio>
 #include "geometry.h"
+#include "renderer.h"
 
-TEST(GeometryTest, Load) {
-    MeshResources resources;
+TEST(GeometryTest, ObjLoad) {
+    auto renderer = new Renderer(80, 52);
+    Resources resources(renderer->getContext());
 
-    int id = resources.loadObjFile("assets/monkey.obj");
+    int id = resources.loadObjFile("monkey.obj");
 
     Mesh* mesh = resources.getMesh(id);
 

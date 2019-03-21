@@ -4,6 +4,7 @@
 #include <optix.h>
 #include <optix_world.h>
 #include <cstdlib>
+#include <vector>
 #include "tiny_obj_loader.h"
 
 // Code here is roughly inspired from OptiXMesh in the OptiX samples
@@ -23,18 +24,24 @@ class Mesh {
     std::vector<tinyobj::material_t> materials;
 };
 
-class MeshResources {
-    Mesh** meshes = nullptr;
-    int size      = 0;
+class Resources {
+    optix::Context context;
+
+    Mesh** meshes   = nullptr;
+    int meshes_size = 0;
 
    public:
-    MeshResources(){};
-    ~MeshResources() {
-        for (int i = 0; i < size; i++) {
-            delete meshes[i];
-        }
+    explicit Resources(const optix::Context& context) : context(context){};
+    ~Resources() {
+        try {
+            for (int i = 0; i < meshes_size; i++) {
+                delete meshes[i];
+            }
 
-        free(meshes);
+            free(meshes);
+        } catch (const optix::Exception& ex) {
+            printf("~Resources Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
+        }
     };
 
     Mesh* getMesh(int id) { return meshes[id]; }
@@ -42,9 +49,9 @@ class MeshResources {
     // pass in a mesh and MeshResources will handle the rest
     // returns the mesh id
     int addMesh(Mesh* mesh) {
-        meshes       = (Mesh**)realloc(meshes, (size + 1) * sizeof(Mesh*));
-        meshes[size] = mesh;
-        return size++;
+        meshes = static_cast<Mesh**>(realloc(meshes, (meshes_size + 1) * sizeof(Mesh*)));
+        meshes[meshes_size] = mesh;
+        return meshes_size++;
     }
 
     // load obj file and return mesh id
