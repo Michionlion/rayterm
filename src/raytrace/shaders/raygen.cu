@@ -56,22 +56,23 @@ RT_PROGRAM void raygen() {
     // start the ray traversal at the root object
     rtTrace(sysRootObject, ray, payload);
 
-    unsigned char x, y, z;
-    if (payload.radiance.x < 0.018) {
-        x = (unsigned char)(payload.radiance.x * 4.5 * 255.0);
-    } else {
-        x = (unsigned char)(255.0 * (1.099 * pow(payload.radiance.x, 0.45) - 0.099));
-    }
-    if (payload.radiance.y < 0.018) {
-        y = (unsigned char)(payload.radiance.y * 4.5 * 255.0);
-    } else {
-        y = (unsigned char)(255.0 * (1.099 * pow(payload.radiance.y, 0.45) - 0.099));
-    }
-    if (payload.radiance.z < 0.018) {
-        z = (unsigned char)(payload.radiance.z * 4.5 * 255.0);
-    } else {
-        z = (unsigned char)(255.0 * (1.099 * pow(payload.radiance.z, 0.45) - 0.099));
-    }
+    // unsigned char x, y, z;
+    // if (payload.radiance.x < 0.018) {
+    //     x = (unsigned char)(payload.radiance.x * 4.5 * 255.0);
+    // } else {
+    //     x = (unsigned char)(255.0 * (1.099 * pow(payload.radiance.x, 0.45) - 0.099));
+    // }
+    // if (payload.radiance.y < 0.018) {
+    //     y = (unsigned char)(payload.radiance.y * 4.5 * 255.0);
+    // } else {
+    //     y = (unsigned char)(255.0 * (1.099 * pow(payload.radiance.y, 0.45) - 0.099));
+    // }
+    // if (payload.radiance.z < 0.018) {
+    //     z = (unsigned char)(payload.radiance.z * 4.5 * 255.0);
+    // } else {
+    //     z = (unsigned char)(255.0 * (1.099 * pow(payload.radiance.z, 0.45) - 0.099));
+    // }
 
-    sysOutputBuffer[theLaunchIndex] = make_uchar4(x, y, z, (unsigned char)(255));
+    sysOutputBuffer[theLaunchIndex] = make_uchar4(
+        (unsigned char)(255), (unsigned char)(255), (unsigned char)(255), (unsigned char)(255));
 }
