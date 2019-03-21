@@ -47,6 +47,7 @@ class Renderer {
    public:
     Camera* camera;
     Programs* programs;
+    Resources* resources;
 
     Renderer(int width, int height) : width(width), height(height) {
         std::string place = "initContext";
@@ -69,6 +70,7 @@ class Renderer {
         try {
             delete camera;
             delete programs;
+            delete resources;
             context->destroy();
         } catch (const optix::Exception& ex) {
             printf("~Renderer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());

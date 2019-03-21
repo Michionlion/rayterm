@@ -71,7 +71,8 @@ void Renderer::initOptiX() {
 void Renderer::initWorld() {
     // create camera
 
-    camera = new Camera(0.0f, 0.5f, 90.0f, width, height);
+    camera    = new Camera(0.0f, 0.5f, 90.0f, width, height);
+    resources = new Resources(context);
 
     // optix acceleration
     optix::Acceleration root = context->createAcceleration(std::string("NoAccel"));
