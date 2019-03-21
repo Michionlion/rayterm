@@ -248,7 +248,8 @@ task lintClangTidy(type: Exec) {
     outputs.dir reportDir
     outputs.file report
 
-    def ptr_stuff = ",-clang-analyzer-cplusplus.NewDelete,-clang-analyzer-cplusplus.InnerPointer,-clang-analyzer-cplusplus.NewDeleteLeaks"
+    // these are all likely false positives from device code interactions
+    def ptr_stuff = ",-clang-analyzer-cplusplus.NewDelete,-clang-analyzer-cplusplus.InnerPointer,-clang-analyzer-cplusplus.NewDeleteLeaks,-clang-analyzer-core.CallAndMessage"
 
     args cppFiles.path
     args "-checks=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*$ptr_stuff"
