@@ -56,6 +56,8 @@ void throwMatError(
 int Resources::loadMatFile(std::string matfile) {
     matfile = std::string(ASSET_FOLDER) + std::string("/") + matfile;
 
+    bool requirements[2] = {false, false};
+
     optix::Material material = context->createMaterial();
 
     std::ifstream matstream(matfile.c_str());
@@ -73,6 +75,7 @@ int Resources::loadMatFile(std::string matfile) {
             }
             material->setClosestHitProgram(static_cast<unsigned int>(std::stoul(args[2])),
                 programs->get(args[0].c_str(), args[1].c_str()));
+            requirements[0] = true;
         } else if (line.find("any:") == 0) {
             // anyHit program line
             // format: "any:filename,methodname,raytype"
@@ -83,6 +86,18 @@ int Resources::loadMatFile(std::string matfile) {
             }
             material->setAnyHitProgram(static_cast<unsigned int>(std::stoul(args[2])),
                 programs->get(args[0].c_str(), args[1].c_str()));
+            requirements[1] = true;
+        } else if (line.find("attrib:") == 0) {
+            // attrib program line
+            // format: "attrib:filename,methodname"
+            line                          = line.substr(7);
+            std::vector<std::string> args = split(line, ",");
+            if (args.size() != 2) {
+                throwMatError("Malformed attrib line", matfile, linenum, line);
+            }
+            material["attribProgram"]->setProgramId(
+                programs->get(args[0].c_str(), args[1].c_str()));
+            requirements[2] = true;
         } else if (line.find("var:") == 0) {
             // variable def line
             // format: "var:vartype,varname,intvalue"
@@ -116,11 +131,20 @@ int Resources::loadMatFile(std::string matfile) {
         }
     }
 
+    // verify requirements
+    if (!requirements[0]) {
+        throw std::runtime_error("No closest line in " + matfile);
+    } else if (!requirements[1]) {
+        throw std::runtime_error("No any line in " + matfile);
+    }
+
     return addMaterial(material);
 }
 
-optix::GeometryInstance Resources::createGeometryInstance(int mesh_id, int mat_id) {
-    Mesh* mesh = getMesh(mesh_id);
+optix::GeometryGroup Resources::createGeometryGroup(int mesh_id, int mat_id,
+    const optix::Matrix4x4& transform /* = optix::Matrix4x4::identity() */) {
+    Mesh* mesh               = getMesh(mesh_id);
+    optix::Material material = getMaterial(mat_id);
 
     int num_verts = mesh->attrib.vertices.size();
     int num_norms = mesh->attrib.normals.size();
@@ -132,6 +156,9 @@ optix::GeometryInstance Resources::createGeometryInstance(int mesh_id, int mat_i
     optix::Buffer vidx = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3, num_tris);
     optix::Buffer nidx = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3, num_tris);
 
+    // FIXME: use different indexing scheme for nidx, need to actually get correct normal index that
+    // varies with vertex, not face normal
+
     auto vbuf_data = static_cast<optix::float3*>(vbuf->map());
     auto nbuf_data = static_cast<optix::float3*>(nbuf->map());
     auto vidx_data = static_cast<optix::uint3*>(vidx->map());
@@ -139,19 +166,25 @@ optix::GeometryInstance Resources::createGeometryInstance(int mesh_id, int mat_i
 
     // clang-format off
     for (int i = 0; i < num_verts; i++) {
-        vbuf_data[i] = optix::make_float3(
+        optix::float4 vert = optix::make_float4(
             mesh->attrib.vertices[3 * i + 0],
             mesh->attrib.vertices[3 * i + 1],
-            mesh->attrib.vertices[3 * i + 2]
+            mesh->attrib.vertices[3 * i + 2],
+            1.0f
         );
+        vbuf_data[i] = optix::make_float3(transform * vert);
     }
 
+    optix::Matrix4x4 norm_transform = transform.inverse().transpose();
+
     for (int i = 0; i < num_norms; i++) {
-        nbuf_data[i] = optix::make_float3(
+        optix::float4 vert = optix::make_float4(
             mesh->attrib.normals[3 * i + 0],
             mesh->attrib.normals[3 * i + 1],
-            mesh->attrib.normals[3 * i + 2]
+            mesh->attrib.normals[3 * i + 2],
+            0.0f
         );
+        nbuf_data[i] = optix::make_float3(norm_transform * vert);
     }
 
     for (int i = 0; i < num_tris; i++) {
@@ -181,16 +214,26 @@ optix::GeometryInstance Resources::createGeometryInstance(int mesh_id, int mat_i
     triangles->setPrimitiveCount(num_tris);
     triangles->setVertices(num_verts, vbuf, RT_FORMAT_FLOAT3);
     triangles->setTriangleIndices(vidx, RT_FORMAT_UNSIGNED_INT3);
+    if (material["attribProgram"]->getType() == RT_OBJECTTYPE_PROGRAM) {
+        printf("before\n");
+        triangles->setAttributeProgram(material["attribProgram"]->getProgram());
+        printf("after\n");
+    }
 
     // create GeometryInstance
-    optix::GeometryInstance instance = context->createGeometryInstance();
-    instance->setGeometryTriangles(triangles);
-    instance->setMaterialCount(1);
-    instance->setMaterial(0u, getMaterial(mat_id));
+    optix::GeometryInstance instance = context->createGeometryInstance(triangles, material);
+    // instance->setGeometryTriangles(triangles);
+    // instance->setMaterialCount(1);
+    // instance->setMaterial(0u, material);
 
-    // set variables not declared in GeometryTriangles
-    instance["varNormals"]->set(nbuf);
-    instance["varNormalIndices"]->set(nidx);
+    instance["vbuf"]->set(vbuf);
+    instance["nbuf"]->set(nbuf);
+    instance["vidx"]->set(vidx);
+    instance["nidx"]->set(nidx);
 
-    return instance;
+    optix::GeometryGroup group = context->createGeometryGroup();
+    group->addChild(instance);
+    group->setAcceleration(context->createAcceleration("Trbvh"));
+
+    return group;
 }
