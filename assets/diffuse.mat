@@ -1,8 +1,8 @@
 # Define closest hit program
 closest:diffuse,closest_hit,0
+# closest:diffuse,closest_hit,1
 # Define any hit program
 any:diffuse,any_hit,0
+# any:diffuse,any_hit,1 
 # Define any variables
-var:int2,varTestSize,2,2
-var:float3,varGlobalNormal,0.5232,-0.53121,0.9942
-
+var:float3,varColor,0.5232,0.53121,0.9942
