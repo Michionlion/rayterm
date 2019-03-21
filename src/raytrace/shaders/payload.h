@@ -5,6 +5,7 @@
 
 struct RayPayload {
     optix::float3 radiance;
+    uint rand;
 };
 
 #endif

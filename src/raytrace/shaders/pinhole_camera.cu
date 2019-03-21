@@ -5,6 +5,7 @@
 #include <optixu/optixu_math_namespace.h>
 
 #include "payload.h"
+#include "random.h"
 
 // Note, the nomenclature used in the device code of all optixIntroduction samples
 // follows some simple rules using prefixes to help indicating the scope and meaning:
@@ -70,21 +71,22 @@ RT_FUNCTION uchar4 display(float3 val) {
 
 // Entry point
 RT_PROGRAM void raygen() {
-    RayPayload payload;
-
-    payload.radiance = make_float3(0.0f);
-
-    // The launch index is the pixel coordinate.
-    // Note that launchIndex = (0, 0) is the bottom left corner of the image.
+    // the launch dimension is the screen size
+    const float2 screen = make_float2(theLaunchDim);
+    // The launch index is the current pixel coordinate
+    // Note that launchIndex = (0, 0) is the bottom left corner of the image
     const float2 pixel = make_float2(theLaunchIndex);
 
-    // sample the ray in the center of the pixel.
-    const float2 fragment = pixel + make_float2(0.5f);
+    RayPayload payload;
+    // seed this ray's random number stream
+    payload.rand     = tea<16>(screen.x * pixel.y, screen.y * pixel.x);
+    payload.radiance = make_float3(0.0f);
 
-    const float2 screen = make_float2(theLaunchDim);
+    // sample the ray in the center of the pixel (no subpixel jitter)
+    const float2 sample_pos = pixel + make_float2(0.5f);
 
-    // normalized device coordinates in range [-1, 1].
-    const float2 ndc = (fragment / screen) * 2.0f - 1.0f;
+    // normalized device coordinates in range [-1, 1]
+    const float2 ndc = (sample_pos / screen) * 2.0f - 1.0f;
 
     const float3 origin = sysCameraPosition;
 
