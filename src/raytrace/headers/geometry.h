@@ -35,7 +35,7 @@ class Resources {
     std::vector<optix::Material> materials;
 
    public:
-    explicit Resources(const optix::Context& context, const Programs* programs)
+    explicit Resources(const optix::Context& context, Programs* programs)
         : context(context), programs(programs){};
     ~Resources() {
         try {
