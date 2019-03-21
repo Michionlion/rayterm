@@ -26,7 +26,7 @@ class Camera {
 
    public:
     Camera(float phi, float theta, float fov, int width, int height) : fov(fov) {
-        cameraPosition = optix::make_float3(0.0f, 0.0f, 1.0f);
+        cameraPosition = optix::make_float3(0.0f, 0.0f, 0.0f);
         cameraU        = optix::make_float3(1.0f, 0.0f, 0.0f);
         cameraV        = optix::make_float3(0.0f, 1.0f, 0.0f);
         cameraW        = optix::make_float3(0.0f, 0.0f, -1.0f);
@@ -38,6 +38,7 @@ class Camera {
 
     void setViewport(int w, int h);
     void setPosition(optix::float3 position);
+    void setPosition(float x, float y, float z) { setPosition(optix::make_float3(x, y, z)); }
     void setLook(float p, float t);
 
     float getAspectRatio() const { return aspect_ratio; }
