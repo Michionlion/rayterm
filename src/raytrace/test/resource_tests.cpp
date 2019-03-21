@@ -15,6 +15,10 @@ TEST(GeometryTest, ObjLoad) {
 
     int num_verts = mesh->attrib.vertices.size() / 3;
     EXPECT_EQ(num_verts, 7958) << "Loaded incorrect number of vertices";
+
+    // assumes one shape
+    int num_tris = mesh->shapes[0].mesh.num_face_vertices.size();
+    EXPECT_EQ(num_tris, 15744) << "Loaded incorrect number of faces";
 }
 
 TEST(GeometryTest, MatLoad) {
@@ -38,5 +42,17 @@ TEST(GeometryTest, GeometryInstance) {
 
     optix::GeometryInstance instance = resources.createGeometryInstance(mesh_id, mat_id);
 
-    // EXPECT_EQ()
+    int num_vars = instance->getVariableCount();
+    EXPECT_EQ(num_vars, 2) << "Did not load normal buffer variables";
+
+    int num_mats = instance->getMaterialCount();
+    EXPECT_EQ(num_mats, 1) << "Did not load correct number of materials";
+
+    optix::Material mat = instance->getMaterial(0u);
+    EXPECT_EQ(mat, resources.getMaterial(mat_id)) << "Loaded Material not equal to resources's";
+
+    optix::GeometryTriangles tris = instance->getGeometryTriangles();
+    Mesh* mesh                    = resources.getMesh(mesh_id);
+    EXPECT_EQ(tris->getPrimitiveCount(), mesh->shapes[0].mesh.num_face_vertices.size())
+        << "Mesh and GeometryTriangles triangle count do not match";
 }
