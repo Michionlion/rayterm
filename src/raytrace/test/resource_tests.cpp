@@ -27,5 +27,16 @@ TEST(GeometryTest, MatLoad) {
 
     int num_vars = mat->getVariableCount();
     EXPECT_EQ(num_vars, 2) << "Loaded incorrect number of variables";
+}
 
+TEST(GeometryTest, GeometryInstance) {
+    auto renderer = new Renderer(80, 52);
+    Resources resources(renderer->getContext(), renderer->programs);
+
+    int mesh_id = resources.loadObjFile("monkey.obj");
+    int mat_id  = resources.loadMatFile("diffuse.mat");
+
+    optix::GeometryInstance instance = resources.createGeometryInstance(mesh_id, mat_id);
+
+    // EXPECT_EQ()
 }
