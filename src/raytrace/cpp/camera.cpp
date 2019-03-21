@@ -48,9 +48,9 @@ bool Camera::loadParameters(optix::Context context) {
     float tanFov = tanf((fov * 0.5f) * M_PIf / 180.0f);
 
     // "tangent"
-    cameraU = aspect_ratio * optix::make_float3(-sinPhi, 0.0f, -cosPhi) * tanFov;
+    cameraU = aspect_ratio * optix::make_float3(sinPhi, 0.0f, cosPhi) * tanFov;
     // "bitangent"
-    cameraV = optix::make_float3(cosTheta * cosPhi, sinTheta, cosTheta * -sinPhi) * tanFov;
+    cameraV = -optix::make_float3(cosTheta * cosPhi, sinTheta, cosTheta * -sinPhi) * tanFov;
     // "-normal" to look at the center.
     cameraW = -normal;
 
