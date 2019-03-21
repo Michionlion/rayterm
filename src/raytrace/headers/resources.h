@@ -81,6 +81,7 @@ class Resources {
     int loadMatFile(std::string matfile);
     int loadMatFile(const char* matfile) { return loadMatFile(std::string(matfile)); }
 
-    optix::GeometryInstance createGeometryInstance(int mesh_id, int mat_id);
+    optix::GeometryGroup createGeometryGroup(
+        int mesh_id, int mat_id, const optix::Matrix4x4& transform = optix::Matrix4x4::identity());
 };
 #endif
