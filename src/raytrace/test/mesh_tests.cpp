@@ -14,3 +14,16 @@ TEST(GeometryTest, ObjLoad) {
     int num_verts = mesh->attrib.vertices.size() / 3;
     EXPECT_EQ(num_verts, 7958) << "Loaded incorrect number of vertices";
 }
+
+TEST(GeometryTest, MatLoad) {
+    auto renderer = new Renderer(80, 52);
+    Resources resources(renderer->getContext());
+
+    int mat_id = resources.loadMatFile("diffuse.mat");
+
+    Material* mat = resources.getMaterial(mat_id);
+
+    int num_vars = mat->getVariableCount();
+    EXPECT_EQ(num_vars, 2) << "Loaded incorrect number of variables";
+
+}
