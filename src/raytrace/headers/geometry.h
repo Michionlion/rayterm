@@ -57,7 +57,8 @@ class Resources {
     // load obj file and return mesh id
     // this method allocates a new Mesh
     // and adds it to the meshes array
-    int loadObjFile(const char* objfile);
+    int loadObjFile(std::string objfile);
+    int loadObjFile(const char* objfile) { return loadObjFile(std::string(objfile)); }
 
     optix::GeometryInstance createGeometryInstance(const int mesh_id);
 };

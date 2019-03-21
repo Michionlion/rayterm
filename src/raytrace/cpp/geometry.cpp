@@ -3,20 +3,18 @@
 #include "geometry.h"
 #include <optix.h>
 #include <optix_world.h>
+#include "build_variables.h"
 
-int MeshResources::loadObjFile(const char* objfile) {
+int Resources::loadObjFile(std::string objfile) {
+    objfile = std::string(ASSET_FOLDER) + std::string("/") + objfile;
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
 
     std::string errString;
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &errString, objfile, nullptr, true);
-
-    if (!errString.empty()) {
-        printf("tinyobj::LoadObj Error: %s\n", errString.c_str());
-    }
-
-    if (!ret) {
+    // triangulate model while loading -- all loaded models will consist of only triangles
+    if (!tinyobj::LoadObj(
+            &attrib, &shapes, &materials, &errString, objfile.c_str(), nullptr, true)) {
         throw std::runtime_error(errString);
     }
 

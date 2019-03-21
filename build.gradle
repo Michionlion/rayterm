@@ -21,6 +21,9 @@ def validate_project_settings() {
     if(!tinyobjloader_location.startsWith("/")) {
         tinyobjloader_location = "${projectDir.getPath()}/${tinyobjloader_location}"
     }
+    if(!asset_folder.startsWith("/")) {
+        asset_folder = "${projectDir.getPath()}/${asset_folder}"
+    }
     if(!gcc_path.startsWith("/")) {
         gcc_path = "${projectDir.getPath()}/${gcc_path}"
     }
@@ -104,6 +107,8 @@ model {
                 cppCompiler.define "RES_MULT", "${project.getProperty('RES_MULT')}"
             if(project.hasProperty('NO_PROGRESS'))
                 cppCompiler.define "NO_PROGRESS"
+
+            cppCompiler.define "ASSET_FOLDER", "\"${asset_folder}\""
 
             cppCompiler.args "-std=c++11", "-msse4", "-fPIC", "-Wall"
             setCuArgs(cppCompiler)
