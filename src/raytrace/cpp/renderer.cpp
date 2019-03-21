@@ -80,17 +80,38 @@ void Renderer::initOptiX() {
 void Renderer::initWorld() {
     // create camera
 
-    camera    = new Camera(0.0f, 0.5f, 90.0f, width, height);
+    camera = new Camera(0.0f, 0.6f, 74.0f, width, height);
+    camera->setPosition(3, 1.5, 0);
     resources = new Resources(context, programs);
 
-    // optix acceleration
-    optix::Acceleration root = context->createAcceleration(std::string("NoAccel"));
-
     optix::Group groupRoot = context->createGroup();
-    groupRoot->setAcceleration(root);
-    groupRoot->setChildCount(0);
+    groupRoot->setAcceleration(context->createAcceleration("Trbvh"));
 
-    context["sysRootObject"]->set(groupRoot);
+    // sample world (monkey.obj and diffuse.mat)
+
+    int monkeyObj  = resources->loadObjFile("monkey.obj");
+    int coneObj    = resources->loadObjFile("cone.obj");
+    int planeObj   = resources->loadObjFile("plane.obj");
+    int sphereObj  = resources->loadObjFile("sphere.obj");
+    int diffuseMat = resources->loadMatFile("diffuse.mat");
+
+    optix::GeometryGroup monkey1 = resources->createGeometryGroup(monkeyObj, diffuseMat,
+        optix::Matrix4x4::translate(optix::make_float3(-2, 1, 2.5)) *
+            optix::Matrix4x4::rotate(M_PI / 3, optix::make_float3(0, 1, 0)));
+    optix::GeometryGroup monkey2 = resources->createGeometryGroup(
+        monkeyObj, diffuseMat, optix::Matrix4x4::translate(optix::make_float3(-1.5, 2, -2.5)));
+    optix::GeometryGroup cone  = resources->createGeometryGroup(coneObj, diffuseMat);
+    optix::GeometryGroup plane = resources->createGeometryGroup(
+        planeObj, diffuseMat, optix::Matrix4x4::scale(optix::make_float3(10.0)));
+    optix::GeometryGroup sphere = resources->createGeometryGroup(sphereObj, diffuseMat,
+        optix::Matrix4x4::scale(optix::make_float3(1.5)) *
+            optix::Matrix4x4::translate(optix::make_float3(-1.5, 0.5, -1.5)));
+
+    groupRoot->addChild(monkey1);
+    groupRoot->addChild(monkey2);
+    groupRoot->addChild(cone);
+    groupRoot->addChild(plane);
+    groupRoot->addChild(sphere);
 
     // read world description
 
@@ -99,6 +120,7 @@ void Renderer::initWorld() {
     // load into acceleration structure
 
     // send to GPU
+    context["sysRootObject"]->set(groupRoot);
 }
 
 void Renderer::resize(int width, int height) {
