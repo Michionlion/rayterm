@@ -7,4 +7,4 @@ any:diffuse,any_hit,0
 # Define attribute program
 # attrib:diffuse,triangle_attributes
 # Define any variables
-var:float3,varAttenuation,0.8232,0.33121,0.1942
+var:float3,varAttenuation,0.82,0.33,0.21

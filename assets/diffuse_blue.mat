@@ -1,0 +1,10 @@
+# Define closest hit program
+closest:diffuse,closest_hit,0
+# closest:diffuse,closest_hit,1
+# Define any hit program
+any:diffuse,any_hit,0
+# any:diffuse,any_hit,1
+# Define attribute program
+# attrib:diffuse,triangle_attributes
+# Define any variables
+var:float3,varAttenuation,0.13,0.21,0.92
