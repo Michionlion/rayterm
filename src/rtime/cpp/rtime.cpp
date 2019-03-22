@@ -11,11 +11,11 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    int n        = std::stoi(argv[1]);
-    int res_mult = std::stof(argv[2]);
-    int samples  = std::stof(argv[3]);
-    int width    = int(80 * res_mult);
-    int height   = int(52 * res_mult);
+    int n          = std::stoi(argv[1]);
+    float res_mult = std::stof(argv[2]);
+    int samples    = std::stoi(argv[3]);
+    int width      = int(80 * res_mult);
+    int height     = int(52 * res_mult);
     printDeviceInfo();
     printf("Rendering %dx%d, %dspp image\n", width, height, samples);
 
