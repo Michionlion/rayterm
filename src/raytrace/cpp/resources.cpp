@@ -107,26 +107,28 @@ int Resources::loadMatFile(std::string matfile) {
                 throwMatError("Malformed var line", matfile, linenum, line);
             }
             // FIXME: no error checking if type is specified and not enough values given
-            if (args[0].compare("int")) {
+            if (args[0].compare("int") == 0) {
                 material[args[1]]->setInt(std::stoi(args[2]));  // NOLINT
-            } else if (args[0].compare("int2")) {
+            } else if (args[0].compare("int2") == 0) {
                 material[args[1]]->setInt(std::stoi(args[2]), std::stoi(args[3]));  // NOLINT
-            } else if (args[0].compare("int3")) {
+            } else if (args[0].compare("int3") == 0) {
                 material[args[1]]->setInt(
                     std::stoi(args[2]), std::stoi(args[3]), std::stoi(args[4]));  // NOLINT
-            } else if (args[0].compare("int4")) {
+            } else if (args[0].compare("int4") == 0) {
                 material[args[1]]->setInt(std::stoi(args[2]), std::stoi(args[3]),
                     std::stoi(args[4]), std::stoi(args[5]));  // NOLINT
-            } else if (args[0].compare("float")) {
+            } else if (args[0].compare("float") == 0) {
                 material[args[1]]->setFloat(std::stof(args[2]));  // NOLINT
-            } else if (args[0].compare("float2")) {
+            } else if (args[0].compare("float2") == 0) {
                 material[args[1]]->setFloat(std::stof(args[2]), std::stof(args[3]));  // NOLINT
-            } else if (args[0].compare("float3")) {
+            } else if (args[0].compare("float3") == 0) {
                 material[args[1]]->setFloat(
                     std::stof(args[2]), std::stof(args[3]), std::stof(args[4]));  // NOLINT
-            } else if (args[0].compare("float4")) {
+            } else if (args[0].compare("float4") == 0) {
                 material[args[1]]->setFloat(std::stof(args[2]), std::stof(args[3]),
                     std::stof(args[4]), std::stof(args[5]));  // NOLINT
+            } else {
+                throwMatError("Unknown variable type", matfile, linenum, line);
             }
         }
     }
