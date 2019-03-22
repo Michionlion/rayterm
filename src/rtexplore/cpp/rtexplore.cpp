@@ -8,8 +8,11 @@ int main(int argc, char* argv[]) {
 
     // do fancy hello stuff
     wborder(term->main, 0, 0, 0, 0, 0, 0, 0, 0);
+    // takes y,x not x,y
     wmove(term->main, 1, 1);
-    add_str(term->main, "Hello World from the main screen", A_BOLD);
+    attron(A_BOLD);
+    mvwaddstr(term->main, 1, 1, "Hello World from the main screen");
+    attroff(A_BOLD);
     term->set_info_string("INFO WINDOW");
 
     // show changes

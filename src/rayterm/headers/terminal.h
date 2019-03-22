@@ -32,8 +32,4 @@ class Terminal {
     void set_info_string(const char* str);
 };
 
-// add_str(WINDOW*, char*, chtype) draws the given string to the window given with the given
-// attributes.
-void add_str(WINDOW* window, const char* str, chtype attr);
-
 #endif

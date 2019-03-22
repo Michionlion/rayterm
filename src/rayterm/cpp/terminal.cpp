@@ -59,8 +59,9 @@ void Terminal::handle_resize() {
 // auto-refreshes info window
 void Terminal::set_info_string(const char* str) {
     wclear(info);
-    wmove(info, 0, 0);
-    add_str(info, str, A_BOLD);
+    attron(A_BOLD);
+    mvwaddstr(info, 0, 0, str);
+    attroff(A_BOLD);
     wrefresh(info);
 }
 
