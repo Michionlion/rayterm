@@ -97,7 +97,7 @@ model {
             sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
         }
         raytermTest(GoogleTestTestSuiteSpec) {
-            testing $.components.raytrace
+            testing $.components.rayterm
             sources.cpp.source.srcDir "src/rayterm/test"
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
             sources.cpp.lib library: 'optix', linkage: 'shared'
@@ -256,7 +256,7 @@ task lintClangTidy(type: Exec) {
     outputs.file report
 
     // these are all likely false positives from device code interactions
-    def ptr_stuff = ",-clang-analyzer-cplusplus.NewDelete,-clang-analyzer-cplusplus.InnerPointer,-clang-analyzer-cplusplus.NewDeleteLeaks,-clang-analyzer-core.CallAndMessage"
+    def ptr_stuff = ",-clang-analyzer-cplusplus.NewDelete,-clang-analyzer-cplusplus.InnerPointer,-clang-analyzer-cplusplus.NewDeleteLeaks,-clang-analyzer-core.CallAndMessage,-google-readability-todo"
 
     args cppFiles.path
     args "-checks=-*,google-*,modernize-*,clang-analyzer-*,bugprone-*,performance-*$ptr_stuff"
