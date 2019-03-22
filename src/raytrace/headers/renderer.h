@@ -40,7 +40,7 @@ class Renderer {
 
     optix::Context context;
     optix::Buffer raw_buffer;
-    optix::Buffer final_buffer;
+    // optix::Buffer final_buffer;
 
     optix::CommandList launch_stages;
 
@@ -86,7 +86,7 @@ class Renderer {
 
     void resize(int width, int height);
 
-    PixelBuffer* buffer() { return new PixelBuffer(final_buffer); }
+    PixelBuffer* buffer() { return new PixelBuffer(raw_buffer); }
 
     // launch a ray-tracing render
     void launch();

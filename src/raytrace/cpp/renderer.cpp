@@ -81,15 +81,17 @@ void Renderer::initOptiX() {
 
     // setup post processing
 
-    optix::PostprocessingStage denoiser = context->createBuiltinPostProcessingStage("DLDenoiser");
-    denoiser["input_buffer"]->set(raw_buffer);
+    // TODO: fix denoiser library loading issues, add albedo buffer
+    // optix::PostprocessingStage denoiser =
+    // context->createBuiltinPostProcessingStage("DLDenoiser");
+    // denoiser["input_buffer"]->set(raw_buffer);
     // denoiser["input_albedo_buffer"]->set(albedo_buffer);
     // denoiser["input_normal_buffer"]->set(normal_buffer);
-    denoiser["output_buffer"]->set(final_buffer);
+    // denoiser["output_buffer"]->set(final_buffer);
 
     launch_stages = context->createCommandList();
     launch_stages->appendLaunch(0, width, height);
-    launch_stages->appendPostprocessingStage(denoiser, width, height);
+    // launch_stages->appendPostprocessingStage(denoiser, width, height);
     launch_stages->finalize();
 }
 
