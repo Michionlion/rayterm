@@ -87,7 +87,7 @@ void Renderer::initWorld() {
     // create camera
 
     camera = new Camera(0.0f, 0.6f, 74.0f, width, height);
-    camera->setPosition(3, 1.5, 0);
+    camera->setPosition(2.5, 2, 0);
     resources = new Resources(context, programs);
 
     optix::Group groupRoot = context->createGroup();
@@ -95,21 +95,25 @@ void Renderer::initWorld() {
 
     // sample world (monkey.obj and diffuse.mat)
 
-    int monkeyObj  = resources->loadObjFile("monkey.obj");
-    int coneObj    = resources->loadObjFile("cone.obj");
-    int planeObj   = resources->loadObjFile("plane.obj");
-    int sphereObj  = resources->loadObjFile("sphere.obj");
-    int diffuseMat = resources->loadMatFile("diffuse.mat");
+    int monkeyObj = resources->loadObjFile("monkey.obj");
+    int coneObj   = resources->loadObjFile("cone.obj");
+    int planeObj  = resources->loadObjFile("plane.obj");
+    int sphereObj = resources->loadObjFile("sphere.obj");
+    int clayMat   = resources->loadMatFile("diffuse_clay.mat");
+    int greenMat  = resources->loadMatFile("diffuse_green.mat");
+    int blueMat   = resources->loadMatFile("diffuse_blue.mat");
 
-    optix::GeometryGroup monkey1 = resources->createGeometryGroup(monkeyObj, diffuseMat,
+    optix::GeometryGroup monkey1 = resources->createGeometryGroup(monkeyObj, clayMat,
         optix::Matrix4x4::translate(optix::make_float3(-2, 1, 2.5)) *
             optix::Matrix4x4::rotate(M_PI / 3, optix::make_float3(0, 1, 0)));
     optix::GeometryGroup monkey2 = resources->createGeometryGroup(
-        monkeyObj, diffuseMat, optix::Matrix4x4::translate(optix::make_float3(-1.5, 2, -2.5)));
-    optix::GeometryGroup cone  = resources->createGeometryGroup(coneObj, diffuseMat);
+        monkeyObj, greenMat, optix::Matrix4x4::translate(optix::make_float3(-1.5, 2, -2.5)));
+    optix::GeometryGroup cone  = resources->createGeometryGroup(coneObj, clayMat,
+        optix::Matrix4x4::translate(optix::make_float3(0, 1, 0.5)) *
+            optix::Matrix4x4::rotate(M_PI * 1.2f, optix::make_float3(1, 0, 0)));
     optix::GeometryGroup plane = resources->createGeometryGroup(
-        planeObj, diffuseMat, optix::Matrix4x4::scale(optix::make_float3(10.0)));
-    optix::GeometryGroup sphere = resources->createGeometryGroup(sphereObj, diffuseMat,
+        planeObj, greenMat, optix::Matrix4x4::scale(optix::make_float3(10.0)));
+    optix::GeometryGroup sphere = resources->createGeometryGroup(sphereObj, blueMat,
         optix::Matrix4x4::scale(optix::make_float3(1.5)) *
             optix::Matrix4x4::translate(optix::make_float3(-1.5, 0.5, -1.5)));
 

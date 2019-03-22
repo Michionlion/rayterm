@@ -25,7 +25,7 @@ TEST(GeometryTest, MatLoad) {
     auto renderer = new Renderer(80, 52);
     Resources resources(renderer->getContext(), renderer->programs);
 
-    int mat_id = resources.loadMatFile("diffuse.mat");
+    int mat_id = resources.loadMatFile("diffuse_clay.mat");
 
     optix::Material mat = resources.getMaterial(mat_id);
 
@@ -38,7 +38,7 @@ TEST(GeometryTest, GeometryInstance) {
     Resources resources(renderer->getContext(), renderer->programs);
 
     int mesh_id = resources.loadObjFile("monkey.obj");
-    int mat_id  = resources.loadMatFile("diffuse.mat");
+    int mat_id  = resources.loadMatFile("diffuse_clay.mat");
 
     optix::GeometryInstance instance = resources.createGeometryGroup(mesh_id, mat_id)->getChild(0);
 
