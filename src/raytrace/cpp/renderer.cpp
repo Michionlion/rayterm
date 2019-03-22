@@ -67,17 +67,30 @@ void Renderer::initOptiX() {
     context->setMissProgram(0, programs->get("global_miss"));
 
     // create pixel buffer
-    pixel_buffer = context->createBuffer(RT_BUFFER_OUTPUT);
+    raw_buffer = context->createBuffer(RT_BUFFER_OUTPUT);
     // set to rgba
-    pixel_buffer->setFormat(RT_FORMAT_UNSIGNED_BYTE4);
-    pixel_buffer->setSize(width, height);
-    context["sysOutputBuffer"]->set(pixel_buffer);
+    raw_buffer->setFormat(RT_FORMAT_UNSIGNED_BYTE4);
+    raw_buffer->setSize(width, height);
+    context["sysOutputBuffer"]->set(raw_buffer);
 
     context["sysNumSamples"]->setUint(samples);
 
     // global shader variables
     context["sysColorSky"]->setFloat(1, 1, 1);
     context["sysColorGround"]->setFloat(0, 0, 0);
+
+    // setup post processing
+
+    optix::PostprocessingStage denoiser = context->createBuiltinPostProcessingStage("DLDenoiser");
+    denoiser["input_buffer"]->set(raw_buffer);
+    // denoiser["input_albedo_buffer"]->set(albedo_buffer);
+    // denoiser["input_normal_buffer"]->set(normal_buffer);
+    denoiser["output_buffer"]->set(final_buffer);
+
+    launch_stages = context->createCommandList();
+    launch_stages->appendLaunch(0, width, height);
+    launch_stages->appendPostprocessingStage(denoiser, width, height);
+    launch_stages->finalize();
 }
 
 void Renderer::initWorld() {
@@ -133,18 +146,17 @@ void Renderer::initWorld() {
 void Renderer::resize(int width, int height) {
     this->width  = width;
     this->height = height;
-    pixel_buffer->setSize(width, height);
+    raw_buffer->setSize(width, height);
     camera->setViewport(width, height);
 }
 
 void Renderer::launch() {
-
     try {
         bool set = camera->loadParameters(context);
 
         // printf("set camera parameters (%s)\n", set ? "true" : "false");
         // printf("launched!\n");
-        context->launch(0, width, height);
+        launch_stages->execute();
     } catch (const optix::Exception& ex) {
         printf("launch Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
     }
