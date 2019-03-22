@@ -36,7 +36,7 @@ class PixelBuffer {
 };
 
 class Renderer {
-    int width, height;
+    int width, height, samples;
 
     optix::Context context;
     optix::Buffer pixel_buffer;
@@ -51,7 +51,7 @@ class Renderer {
     Programs* programs;
     Resources* resources;
 
-    Renderer(int width, int height) : width(width), height(height) {
+    Renderer(int width, int height, int samples) : width(width), height(height), samples(samples) {
         std::string place = "initContext";
         try {
             initContext();

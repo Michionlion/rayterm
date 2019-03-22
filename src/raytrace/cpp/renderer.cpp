@@ -11,10 +11,6 @@
 #define HANDLE_EXCEPTIONS 1
 #define TRACE_DEPTH 7
 
-#ifndef SAMPLES
-#define SAMPLES 8
-#endif
-
 void Renderer::initContext() {
     uint32_t device_count;
     RTresult code = rtDeviceGetDeviceCount(&device_count);
@@ -77,7 +73,7 @@ void Renderer::initOptiX() {
     pixel_buffer->setSize(width, height);
     context["sysOutputBuffer"]->set(pixel_buffer);
 
-    context["sysNumSamples"]->setUint(SAMPLES);
+    context["sysNumSamples"]->setUint(samples);
 
     // global shader variables
     context["sysColorSky"]->setFloat(1, 1, 1);
