@@ -1,4 +1,5 @@
 #include <optix.h>
+#include "config.h"
 
 rtBuffer<float4, 2> sysOutputBuffer;
 

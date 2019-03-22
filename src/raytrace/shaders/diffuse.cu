@@ -1,8 +1,7 @@
-#include "config.h"
-
 #include <optix.h>
 #include <optix_world.h>
 #include <optixu/optixu_math_namespace.h>
+#include "config.h"
 #include "payload.h"
 #include "random.h"
 
