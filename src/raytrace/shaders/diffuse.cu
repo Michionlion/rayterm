@@ -42,7 +42,7 @@ RT_PROGRAM void closest_hit() {
             optix::normalize(nbuf[n_idx.y] * barycentrics.x + nbuf[n_idx.z] * barycentrics.y +
                              nbuf[n_idx.x] * (1.0f - barycentrics.x - barycentrics.y));
 
-        optix::float3 ref_dir = random_in_uhemisphere(thePayload.rand, normal);
+        optix::float3 ref_dir = optix::normalize(random_in_uhemisphere(thePayload.rand, normal));
         optix::float3 hit_pos = theRay.origin + distance * theRay.direction;
         optix::Ray bounce     = optix::make_Ray(hit_pos, ref_dir, 0, 0.001f, RT_DEFAULT_MAX);
         rtTrace(sysRootObject, bounce, thePayload);

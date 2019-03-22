@@ -27,23 +27,31 @@ struct RandomGenerator {
     }
 };
 
-static __host__ __device__ __inline__ optix::float3 random_in_usphere(RandomGenerator &generator) {
-    optix::float3 vec = optix::make_float3(0.0f);
-    optix::float3 one = make_float3(1.0f);
-    do {
-        vec = 2.0f * optix::make_float3(generator.get(), generator.get(), generator.get()) - one;
-    } while (optix::length(vec) > 1.0);
-    return vec;
-}
 
 static __host__ __device__ __inline__ optix::float3 random_in_uhemisphere(
     RandomGenerator &generator, const optix::float3 &normal) {
-    optix::float3 vec = optix::make_float3(0.0f);
-    optix::float3 one = make_float3(1.0f);
-    do {
-        vec = 2.0f * optix::make_float3(generator.get(), generator.get(), generator.get()) - one;
-    } while (optix::length(vec) > 1.0 || optix::dot(normal, vec) <= 0);
-    return vec;
+    optix::float3 sample = optix::make_float3(0);
+
+    // cosine_sample_hemisphere generates z+ centered hemisphere distribution (not y+)
+    optix::cosine_sample_hemisphere(generator.get(), generator.get(), sample);
+
+    optix::float3 Nt, Nb;
+
+    if (std::fabs(normal.x) > std::fabs(normal.y)) {
+        Nt = optix::make_float3(normal.z, 0, -normal.x) /
+             sqrtf(normal.x * normal.x + normal.z * normal.z);
+    } else {
+        Nt = optix::make_float3(0, -normal.z, normal.y) /
+             sqrtf(normal.y * normal.y + normal.z * normal.z);
+    }
+    Nb = optix::cross(normal, Nt);
+
+    // convert to normal's space directly
+    // math adapted from below, which uses y+ hemisphere distribution
+    // https://www.scratchapixel.com/lessons/3d-basic-rendering/global-illumination-path-tracing
+    return optix::make_float3(sample.x * Nb.x + sample.z * normal.x + sample.y * Nt.x,
+        sample.x * Nb.y + sample.z * normal.y + sample.y * Nt.y,
+        sample.x * Nb.z + sample.z * normal.z + sample.y * Nt.z);
 }
 
 #endif
