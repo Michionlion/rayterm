@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
-        fprintf(stderr, "Usage: rtexplore <N> <RES_MULT>");
+        fprintf(stderr, "Usage: rtime <N> <RES_MULT>\n");
         exit(1);
     }
 
