@@ -80,6 +80,13 @@ model {
             sources.cpp.lib library: 'raytrace', linkage: internal_link_type
             sources.cpp.lib library: "rayterm", linkage: internal_link_type
         }
+        rtime(NativeExecutableSpec) {
+            sources.cpp.lib library: 'cuda', linkage: cuda_link_type
+            sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
+            sources.cpp.lib library: 'raytrace', linkage: internal_link_type
+            sources.cpp.lib library: "rayterm", linkage: internal_link_type
+        }
     }
     testSuites {
         raytraceTest(GoogleTestTestSuiteSpec) {
