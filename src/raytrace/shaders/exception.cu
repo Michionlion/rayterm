@@ -1,7 +1,7 @@
 #include <optix.h>
 #include "config.h"
 
-rtBuffer<float4, 2> sysOutputBuffer;
+rtBuffer<uchar4, 2> sysOutputBuffer;
 
 rtDeclareVariable(uint2, theLaunchIndex, rtLaunchIndex, );
 
@@ -16,6 +16,6 @@ RT_PROGRAM void exception() {
     }
     // RGBA32F super magenta as error color (makes sure this isn't accumulated away in a progressive
     // renderer).
-    sysOutputBuffer[theLaunchIndex] = make_float4(1000000.0f, 0.0f, 1000000.0f, 1.0f);
+    sysOutputBuffer[theLaunchIndex] = make_uchar4(255, 0, 255, 255);
 #endif
 }
