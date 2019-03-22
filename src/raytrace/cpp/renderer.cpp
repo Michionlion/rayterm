@@ -80,7 +80,8 @@ void Renderer::initOptiX() {
     context["sysNumSamples"]->setUint(SAMPLES);
 
     // global shader variables
-    context["sysColorBackground"]->setFloat(1.0, 0.0, 0.0);
+    context["sysColorSky"]->setFloat(1, 1, 1);
+    context["sysColorGround"]->setFloat(0, 0, 0);
 }
 
 void Renderer::initWorld() {
