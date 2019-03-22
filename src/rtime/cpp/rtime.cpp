@@ -6,25 +6,26 @@
 #include "renderer.h"
 
 int main(int argc, char* argv[]) {
-    if (argc != 3) {
-        fprintf(stderr, "Usage: rtime <N> <RES_MULT>\n");
+    if (argc != 4) {
+        fprintf(stderr, "Usage: rtime <N> <RES_MULT> <SAMPLES>\n");
         exit(1);
     }
 
     int n        = std::stoi(argv[1]);
     int res_mult = std::stof(argv[2]);
+    int samples  = std::stof(argv[3]);
     int width    = int(80 * res_mult);
     int height   = int(52 * res_mult);
     printDeviceInfo();
-    printf("Rendering %dx%d image\n", width, height);
+    printf("Rendering %dx%d, %dspp image\n", width, height, samples);
 
-    auto renderer = new Renderer(width, height);
+    auto renderer = new Renderer(width, height, samples);
     std::chrono::steady_clock::time_point begin, end;
     long times[n];
 
     for (int i = 0; i < n; i++) {
         delete renderer;
-        renderer = new Renderer(width, height);
+        renderer = new Renderer(width, height, samples);
 
         printf("Start run %d\n", i + 1);
         begin = std::chrono::steady_clock::now();
@@ -42,7 +43,8 @@ int main(int argc, char* argv[]) {
     }
     average_time /= n;
 
-    printf("\nSUMMARY\n\nRendered on average in %ldms\n", average_time);
+    printf("\nSUMMARY\n\nRendered %dx%d, %dspp images in %ldms on average\n", width, height,
+        samples, average_time);
 
     begin = std::chrono::steady_clock::now();
     write_buffer("test_image.ppm", renderer->buffer());
