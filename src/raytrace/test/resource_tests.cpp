@@ -30,7 +30,7 @@ TEST(GeometryTest, MatLoad) {
     optix::Material mat = resources.getMaterial(mat_id);
 
     int num_vars = mat->getVariableCount();
-    EXPECT_EQ(num_vars, 2) << "Loaded incorrect number of variables";
+    EXPECT_EQ(num_vars, 1) << "Loaded incorrect number of variables";
 }
 
 TEST(GeometryTest, GeometryInstance) {
@@ -43,7 +43,7 @@ TEST(GeometryTest, GeometryInstance) {
     optix::GeometryInstance instance = resources.createGeometryGroup(mesh_id, mat_id)->getChild(0);
 
     int num_vars = instance->getVariableCount();
-    EXPECT_EQ(num_vars, 2) << "Did not load normal buffer variables";
+    EXPECT_EQ(num_vars, 4) << "Did not load buffer and material variables";
 
     int num_mats = instance->getMaterialCount();
     EXPECT_EQ(num_mats, 1) << "Did not load correct number of materials";
