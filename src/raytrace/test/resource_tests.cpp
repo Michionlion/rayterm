@@ -6,7 +6,7 @@
 #include "resources.h"
 
 TEST(GeometryTest, ObjLoad) {
-    auto renderer = new Renderer(80, 52);
+    auto renderer = new Renderer(80, 52, 8);
     Resources resources(renderer->getContext(), renderer->programs);
 
     int id = resources.loadObjFile("monkey.obj");
@@ -22,7 +22,7 @@ TEST(GeometryTest, ObjLoad) {
 }
 
 TEST(GeometryTest, MatLoad) {
-    auto renderer = new Renderer(80, 52);
+    auto renderer = new Renderer(80, 52, 8);
     Resources resources(renderer->getContext(), renderer->programs);
 
     int mat_id = resources.loadMatFile("diffuse_clay.mat");
@@ -34,7 +34,7 @@ TEST(GeometryTest, MatLoad) {
 }
 
 TEST(GeometryTest, GeometryInstance) {
-    auto renderer = new Renderer(80, 52);
+    auto renderer = new Renderer(80, 52, 8);
     Resources resources(renderer->getContext(), renderer->programs);
 
     int mesh_id = resources.loadObjFile("monkey.obj");

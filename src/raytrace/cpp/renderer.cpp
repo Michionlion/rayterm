@@ -138,12 +138,12 @@ void Renderer::resize(int width, int height) {
 }
 
 void Renderer::launch() {
-    bool set = camera->loadParameters(context);
-
-    printf("set camera parameters (%s)\n", set ? "true" : "false");
-    printf("launched!\n");
 
     try {
+        bool set = camera->loadParameters(context);
+
+        // printf("set camera parameters (%s)\n", set ? "true" : "false");
+        // printf("launched!\n");
         context->launch(0, width, height);
     } catch (const optix::Exception& ex) {
         printf("launch Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
