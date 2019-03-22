@@ -5,6 +5,8 @@
 #include "payload.h"
 #include "random.h"
 
+#define MAX_DEPTH 5
+
 // Note, the nomenclature used in the device code of all optixIntroduction samples
 // follows some simple rules using prefixes to help indicating the scope and meaning:
 //
@@ -18,6 +20,7 @@
 rtBuffer<uchar4, 2> sysOutputBuffer;  // RGBA
 
 rtDeclareVariable(rtObject, sysRootObject, , );
+rtDeclareVariable(uint, sysNumSamples, , );
 
 rtDeclareVariable(uint2, theLaunchDim, rtLaunchDim, );
 rtDeclareVariable(uint2, theLaunchIndex, rtLaunchIndex, );
@@ -78,25 +81,37 @@ RT_PROGRAM void raygen() {
     const float2 pixel = make_float2(theLaunchIndex);
 
     RayPayload payload;
-    // seed this ray's random number stream
-    payload.rand     = tea<16>(screen.x * pixel.y, screen.y * pixel.x);
-    payload.radiance = make_float3(0.0f);
+    // seed this pixels' random number generator
+    RandomGenerator generator;
+    generator.init(
+        (unsigned long long)(screen.x * pixel.y) ^ (unsigned long long)(screen.y * pixel.x));
 
-    // sample the ray in the center of the pixel (no subpixel jitter)
-    const float2 sample_pos = pixel + make_float2(0.5f);
+    payload.rand = generator;
 
-    // normalized device coordinates in range [-1, 1]
-    const float2 ndc = (sample_pos / screen) * 2.0f - 1.0f;
+    optix::float3 accum = optix::make_float3(0);
 
-    const float3 origin = sysCameraPosition;
+    for (int sample = 0; sample < sysNumSamples; sample++) {
+        payload.radiance = make_float3(0);
+        payload.depth    = MAX_DEPTH;
+        // sample the pixel with subpixel jitter
+        const float2 sample_pos = pixel + make_float2(generator.get(), generator.get());
 
-    // must be normalized
-    const float3 direction = optix::normalize(ndc.x * sysCameraU + ndc.y * sysCameraV + sysCameraW);
+        // normalized device coordinates in range [-1, 1]
+        const float2 ndc = (sample_pos / screen) * 2.0f - 1.0f;
 
-    optix::Ray ray = optix::make_Ray(origin, direction, 0, 0.0f, RT_DEFAULT_MAX);
+        const float3 origin = sysCameraPosition;
 
-    // start the ray traversal at the root object
-    rtTrace(sysRootObject, ray, payload);
+        // must be normalized
+        const float3 direction =
+            optix::normalize(ndc.x * sysCameraU + ndc.y * sysCameraV + sysCameraW);
 
-    sysOutputBuffer[theLaunchIndex] = display(payload.radiance);
+        optix::Ray ray = optix::make_Ray(origin, direction, 0, 0.0f, RT_DEFAULT_MAX);
+
+        // start the ray traversal at the root object
+        rtTrace(sysRootObject, ray, payload);
+
+        accum += payload.radiance;
+    }
+
+    sysOutputBuffer[theLaunchIndex] = display(accum / sysNumSamples);
 }
