@@ -4,14 +4,6 @@
 #include <cstdio>
 #include <fstream>
 
-#ifndef SAMPLES
-#define SAMPLES 32
-#endif
-
-#ifndef RES_MULT
-#define RES_MULT 1.0
-#endif
-
 int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb /* = nullptr */) {
     std::fstream outfile(filename, std::fstream::out | std::fstream::binary | std::fstream::trunc);
     if (outfile.fail()) {
@@ -19,15 +11,12 @@ int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb
         return 1;
     }
 
-    auto width  = int(80 * RES_MULT);
-    auto height = int(52 * RES_MULT);
-
     outfile << "P6 ";
-    outfile << width << " " << height << " " << 255 << "\n";
-    int pixels = width * height;
+    outfile << buffer->width << " " << buffer->height << " " << 255 << "\n";
+    int pixels = buffer->width * buffer->height;
     int pixel  = 0;
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
+    for (int y = 0; y < buffer->height; y++) {
+        for (int x = 0; x < buffer->width; x++) {
             optix::uchar4 sample = buffer->get(x, y);
 
             // print red
