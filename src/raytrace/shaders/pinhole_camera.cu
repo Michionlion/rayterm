@@ -1,9 +1,7 @@
-#include "config.h"
-
 #include <optix.h>
 #include <optix_world.h>
 #include <optixu/optixu_math_namespace.h>
-
+#include "config.h"
 #include "payload.h"
 #include "random.h"
 
@@ -32,13 +30,13 @@ rtDeclareVariable(float3, sysCameraW, , );
 // exposure + simple Reinhard tonemapper + gamma
 RT_FUNCTION uchar4 display(float3 val) {
     // clamp
-    val.x = fminf(fmaxf(val.x, 0.0f), 1.0f);
-    val.y = fminf(fmaxf(val.y, 0.0f), 1.0f);
-    val.z = fminf(fmaxf(val.z, 0.0f), 1.0f);
+    // val.x = optix::fminf(optix::fmaxf(val.x, 0.0f), 1.0f);
+    // val.y = optix::fminf(optix::fmaxf(val.y, 0.0f), 1.0f);
+    // val.z = optix::fminf(optix::fmaxf(val.z, 0.0f), 1.0f);
 
     // do tonemap
     // val *= 1.0f;
-    // const float burn_out = 0.1f;
+    // const float burn_out = 1.0f;
     // val.x *= (1.0f + val.x * burn_out) / (1.0f + val.x);
     // val.y *= (1.0f + val.y * burn_out) / (1.0f + val.y);
     // val.z *= (1.0f + val.z * burn_out) / (1.0f + val.z);
@@ -65,7 +63,9 @@ RT_FUNCTION uchar4 display(float3 val) {
     } else {
         output.z = (unsigned char)(255.0 * (1.099 * pow(val.z, 0.45) - 0.099));
     }
-
+    // output.x = (unsigned char)(val.x * 255.0);
+    // output.y = (unsigned char)(val.y * 255.0);
+    // output.z = (unsigned char)(val.z * 255.0);
     return output;
 }
 
