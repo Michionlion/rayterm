@@ -21,5 +21,8 @@ export PATH="$GRADLE_LOCATION/bin:$PATH"
 
 wget http://www.leonerd.org.uk/code/libtermkey/libtermkey-0.22.tar.gz
 tar -xzvf libtermkey-0.22.tar.gz
-make -C libtermkey-0.22 all
-sudo make -C libtermkey-0.22 install
+(
+\cd libtermkey-0.22
+make all
+sudo make install
+)
