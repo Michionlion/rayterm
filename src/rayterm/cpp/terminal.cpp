@@ -9,8 +9,8 @@
 #define RECT(t, l, li, co) \
     (TickitRect) { .top = (t), .left = (l), .lines = (li), .cols = (co) }
 
-int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
-int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
+static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
+static int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
 
 inline TickitPenRGB8 make_color(uint8_t r, uint8_t g, uint8_t b) {
     return (TickitPenRGB8){.r = r, .g = g, .b = b};
@@ -37,7 +37,6 @@ Terminal::Terminal() {
     tickit_window_bind_event(main, TICKIT_WINDOW_ON_GEOMCHANGE, TICKIT_BIND_FIRST, resize, this);
     tickit_window_bind_event(main, TICKIT_WINDOW_ON_EXPOSE, TICKIT_BIND_FIRST, render, this);
 
-    tickit_run(root);
     //
     // initscr();
     // start_color();
@@ -60,8 +59,6 @@ Terminal::Terminal() {
 
 // Close down Terminal
 Terminal::~Terminal() {
-    tickit_stop(root);
-
     tickit_window_close(main);
 
     tickit_term_unref(term);
@@ -82,7 +79,7 @@ void Terminal::set_info_string(std::string info) {
     this->info = std::move(info);
 }
 
-int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
+static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
     auto tm                = static_cast<Terminal*>(data);
     auto info              = static_cast<TickitExposeEventInfo*>(_info);
     TickitRenderBuffer* rb = info->rb;
@@ -106,17 +103,15 @@ int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
     }
     tickit_pen_clear_attr(pen, TICKIT_PEN_BG);
 
-    tickit_renderbuffer_goto(rb, tm->height - 1, 0);
+    tickit_renderbuffer_goto(rb, 6, 0);
     tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_FG, make_color(200, 255, 175));
     tickit_renderbuffer_setpen(rb, pen);
     tickit_renderbuffer_text(rb, tm->info.c_str());
 
-    // tickit_renderbuffer_flush_to_term
-
     return 1;
 }
 
-int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
+static int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
     auto tm = static_cast<Terminal*>(data);
     tickit_term_refresh_size(tm->term);
     tickit_term_get_size(tm->term, &(tm->height), &(tm->width));
