@@ -1,19 +1,27 @@
 #ifndef _RAYTERM_UNICODE_BUFFER_H_
 #define _RAYTERM_UNICODE_BUFFER_H_
 
-// U+2580 (▀)
-#define UPPER_HALF_PIXEL_CHAR '\u2580'
+#include <cstdlib>
 
 struct unicode_cell {
-    unsigned char character;
-    unsigned char bg_r;
-    unsigned char bg_g;
-    unsigned char bg_b;
+    uint16_t character;
     unsigned char fg_r;
     unsigned char fg_g;
     unsigned char fg_b;
+    unsigned char bg_r;
+    unsigned char bg_g;
+    unsigned char bg_b;
 
-    unicode_cell(unsigned char character) : character(character) {}
+    explicit unicode_cell(uint16_t character) : character(character) {}
+    unicode_cell(uint16_t character, unsigned char fg_r, unsigned char fg_g, unsigned char fg_b,
+        unsigned char bg_r, unsigned char bg_g, unsigned char bg_b)
+        : character(character),
+          fg_r(fg_r),
+          fg_g(fg_g),
+          fg_b(fg_b),
+          bg_r(bg_r),
+          bg_g(bg_g),
+          bg_b(bg_b) {}
 
     void setFG(unsigned char r, unsigned char g, unsigned char b) {
         bg_r = r;
@@ -33,11 +41,8 @@ class UnicodeBuffer {
     unicode_cell* data;
     unsigned int width, height;
 
-    UnicodeBuffer(unicode_cell* data, unsigned int width, unsigned int height) {
-        this->data   = data;
-        this->width  = width;
-        this->height = height;
-    }
+    UnicodeBuffer(unicode_cell* data, unsigned int width, unsigned int height)
+        : data(data), width(width), height(height) {}
 
     ~UnicodeBuffer() { free(data); }
 
