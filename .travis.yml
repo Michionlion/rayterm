@@ -25,6 +25,7 @@ cache:
     - $GRADLE_LOCATION
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $HOME/.cache/pip
 
 script:
   # clean
