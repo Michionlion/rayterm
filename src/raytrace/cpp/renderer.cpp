@@ -154,7 +154,8 @@ void Renderer::resize(int width, int height) {
 
 void Renderer::launch() {
     try {
-        bool set = camera->loadParameters(context);
+        // bool set = camera->loadParameters(context);
+        camera->loadParameters(context);
 
         // printf("set camera parameters (%s)\n", set ? "true" : "false");
         // printf("launched!\n");
