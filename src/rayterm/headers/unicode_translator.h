@@ -4,6 +4,6 @@
 #include "raytrace"
 #include "unicode_buffer.h"
 
-void translate_halfpixel(UnicodeBuffer* unicode, PixelBuffer* pixels);
+UnicodeBuffer* translate_halfpixel(PixelBuffer* pixels);
 
 #endif
