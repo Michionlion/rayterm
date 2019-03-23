@@ -1,72 +1,128 @@
 #include "terminal.h"
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include "tickit.h"
+
+#define COL_ERROR 1
+
+int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
+int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
+
+inline TickitPenRGB8 make_color(uint8_t r, uint8_t g, uint8_t b) {
+    return (TickitPenRGB8){.r = r, .g = g, .b = b};
+}
 
 Terminal::Terminal() {
-    initscr();
-    start_color();
-    cbreak();
-    noecho();
+    root = tickit_new_stdio();
+    term = tickit_get_term(root);
 
-    curs_set(0);
+    tickit_setctl_int(root, TICKIT_CTL_USE_ALTSCREEN, true);
+    tickit_term_setctl_int(term, TICKIT_TERMCTL_CURSORVIS, false);
+    tickit_term_setctl_int(term, TICKIT_TERMCTL_KEYPAD_APP, true);
+    tickit_term_setctl_int(term, TICKIT_TERMCTL_MOUSE, TICKIT_TERM_MOUSEMODE_MOVE);
 
-    init_pair(1, COLOR_WHITE, COLOR_BLUE);
-    init_pair(2, COLOR_WHITE, COLOR_GREEN);
+    main = tickit_get_rootwin(root);
+    if (!main) {
+        fprintf(stderr, "Cannot create TickitTerm - %s\n", strerror(errno));
+        free(root);
+        exit(1);
+    }
 
-    main = subwin(stdscr, LINES - 1, 0, 0, 0);
-    info = subwin(stdscr, 1, 0, LINES - 1, 0);
-    wbkgd(main, COLOR_PAIR(2));
-    wbkgd(info, COLOR_PAIR(1));
+    tickit_term_get_size(term, &height, &width);
 
-    keypad(main, true);
-    keypad(info, true);
+    tickit_window_bind_event(main, TICKIT_WINDOW_ON_GEOMCHANGE, TICKIT_BIND_FIRST, resize, this);
+    tickit_window_bind_event(main, TICKIT_WINDOW_ON_EXPOSE, TICKIT_BIND_FIRST, render, this);
+
+    tickit_run(root);
+    //
+    // initscr();
+    // start_color();
+    // cbreak();
+    // noecho();
+    //
+    // curs_set(0);
+    //
+    // init_pair(1, COLOR_WHITE, COLOR_BLUE);
+    // init_pair(2, COLOR_WHITE, COLOR_GREEN);
+    //
+    // main = subwin(stdscr, LINES - 1, 0, 0, 0);
+    // info = subwin(stdscr, 1, 0, LINES - 1, 0);
+    // wbkgd(main, COLOR_PAIR(2));
+    // wbkgd(info, COLOR_PAIR(1));
+    //
+    // keypad(main, true);
+    // keypad(info, true);
 }
 
 // Close down Terminal
 Terminal::~Terminal() {
-    delwin(main);
-    delwin(info);
-    endwin();
+    tickit_stop(root);
+
+    tickit_window_close(main);
+
+    tickit_term_unref(term);
+    tickit_unref(root);
 }
 
-void Terminal::render() {
-    // fill buffer with raytrace
-    // convert buffer to unicode
+void Terminal::renderFrame() {
+    // issue raytrace
 
-    // refresh terminal
-    wrefresh(main);
-    // wrefresh(info);
+    // convert buffer
+
+    // expose
+    tickit_window_expose(this->main, NULL);
 }
 
-void Terminal::handle_resize() {
-    getmaxyx(stdscr, width, height);
-    printf("Resized to %dx%d (%d COLS, %d LINES)", width, height, COLS, LINES);
-    /*wresize(stdscr, LINES, COLS);
-    wclear(stdscr);
-    wresize(WINDOWS.info, 1, COLS);
-    wresize(WINDOWS.main, LINES - 1, COLS);
-    mvwin(WINDOWS.info, LINES - 1, 0);
-    mvwin(WINDOWS.main, 0, 0);
+int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
+    Terminal* tm                = static_cast<Terminal*>(data);
+    TickitExposeEventInfo* info = static_cast<TickitExposeEventInfo*>(_info);
+    TickitRenderBuffer* rb      = info->rb;
 
-    // wbkgd(WINDOWS.main, COLOR_PAIR(2));
-    // wbkgd(WINDOWS.info, COLOR_PAIR(1));
-    wclear(WINDOWS.main);
-    wclear(WINDOWS.info);
-    repaint();
-    */
+    int cols       = tickit_window_cols(win);
+    TickitPen* pen = tickit_pen_new();
+
+    tickit_renderbuffer_eraserect(rb, &info->rect);
+
+    tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, COL_ERROR);
+    tickit_renderbuffer_setpen(rb, pen);
+    tickit_renderbuffer_text_at(rb, 1, 0, "Color:");
+
+    tickit_renderbuffer_goto(rb, 2, 0);
+    for (int x = 0; x < cols; x++) {
+        tickit_pen_set_colour_attr(pen, TICKIT_PEN_BG, x > cols / 2 ? COL_ERROR : 0);
+        tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_BG, make_color(255 * x / (cols - 1), 0, 0));
+
+        tickit_renderbuffer_setpen(rb, pen);
+        tickit_renderbuffer_text(rb, " ");
+    }
+    tickit_pen_clear_attr(pen, TICKIT_PEN_BG);
+
+    tickit_renderbuffer_goto(rb, tm->height - 1, 0);
+    tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_FG, make_color(200, 255, 175));
+    tickit_renderbuffer_setpen(rb, pen);
+    tickit_renderbuffer_text(rb, " ");
+
+    // tickit_renderbuffer_flush_to_term
+
+    return 1;
+}
+
+int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
+    Terminal* tm = static_cast<Terminal*>(data);
+    tickit_term_refresh_size(tm->term);
+    tickit_term_get_size(tm->term, &(tm->height), &(tm->width));
+    // re-expose the entire window if it changes shape
+    tickit_window_expose(win, NULL);
+    return 1;
 }
 
 // auto-refreshes info window
-void Terminal::set_info_string(const char* str) {
-    wclear(info);
-    attron(A_BOLD);
-    mvwaddstr(info, 0, 0, str);
-    attroff(A_BOLD);
-    wrefresh(info);
-}
-
-void add_str(WINDOW* window, const char* str, chtype attr) {
-    for (int i = 0; str[i] != '\0'; i++) {
-        waddch(window, str[i] | attr);
-    }
-}
+// void Terminal::set_info_string(const char* str) {
+//     wclear(info);
+//     attron(A_BOLD);
+//     mvwaddstr(info, 0, 0, str);
+//     attroff(A_BOLD);
+//     wrefresh(info);
+// }

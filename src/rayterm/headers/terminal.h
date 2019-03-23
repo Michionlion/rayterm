@@ -1,8 +1,8 @@
 #ifndef _RAYTERM_TERMINAL_H_
 #define _RAYTERM_TERMINAL_H_
 
-#include <ncurses.h>
 #include <cstdint>
+#include "tickit.h"
 
 using color = uint8_t;
 
@@ -15,21 +15,21 @@ using color = uint8_t;
  */
 class Terminal {
    public:
-    WINDOW* info;
-    WINDOW* main;
+    // TickitWindow* info;
+    TickitWindow* main;
+    Tickit* root;
+    TickitTerm* term;
 
     int width, height;
 
     Terminal();
     ~Terminal();
 
-    void render();
-
-    void handle_resize();
+    void renderFrame();
 
     // set_info_string(TERMINAL*, char*) sets the configurable string to be shown in the info window
     // of the terminal given.
-    void set_info_string(const char* str);
+    // void set_info_string(const char* str);
 };
 
 #endif
