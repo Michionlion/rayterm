@@ -1,33 +1,85 @@
+#include <unistd.h>
 #include <cstdio>
-#include <cstring>
+#include <sstream>
 #include "rayterm"
+#include "tickit.h"
 
-int main(int argc, char* argv[]) {
+std::string last_key;
+std::string last_mouse;
+
+static int on_key(TickitTerm *term, TickitEventFlags flags, void *_info, void *user) {
+    auto info = static_cast<TickitKeyEventInfo *>(_info);
+    auto tm   = static_cast<Terminal *>(user);
+
+    switch (info->type) {
+        case TICKIT_KEYEV_TEXT:
+            last_key = "text ";
+            break;
+        case TICKIT_KEYEV_KEY:
+            last_key = "key ";
+            break;
+        default:
+            return 0;
+    }
+    last_key += info->str;
+
+    return 1;
+}
+
+static int on_mouse(TickitTerm *term, TickitEventFlags flags, void *_info, void *user) {
+    auto info = static_cast<TickitMouseEventInfo *>(_info);
+    auto tm   = static_cast<Terminal *>(user);
+
+    switch (info->type) {
+        case TICKIT_MOUSEEV_PRESS:
+            last_mouse = "press ";
+            break;
+        case TICKIT_MOUSEEV_DRAG:
+            last_mouse = "drag ";
+            break;
+        case TICKIT_MOUSEEV_RELEASE:
+            last_mouse = "release ";
+            break;
+        case TICKIT_MOUSEEV_WHEEL:
+            last_mouse = "wheel ";
+            break;
+        default:
+            return 0;
+    }
+
+    if (info->type == TICKIT_MOUSEEV_WHEEL) {
+        last_mouse += (info->button == TICKIT_MOUSEWHEEL_DOWN) ? "down" : "up";
+    } else {
+        last_mouse += "button ";
+        last_mouse += std::to_string(info->button);
+    }
+
+    last_mouse += " at ";
+    last_mouse += std::to_string(info->line);
+    last_mouse += ", ";
+    last_mouse += std::to_string(info->col);
+
+    return 1;
+}
+
+int main(int argc, char *argv[]) {
     // initalize ncurses
     auto term = new Terminal();
 
-    // do fancy hello stuff
-    wborder(term->main, 0, 0, 0, 0, 0, 0, 0, 0);
-    // takes y,x not x,y
-    wmove(term->main, 1, 1);
-    attron(A_BOLD);
-    mvwaddstr(term->main, 1, 1, "Hello World from the main screen");
-    attroff(A_BOLD);
-    term->set_info_string("INFO WINDOW");
+    tickit_term_bind_event(term->term, TICKIT_TERM_ON_KEY, TICKIT_BIND_FIRST, on_key, term);
+    tickit_term_bind_event(term->term, TICKIT_TERM_ON_MOUSE, TICKIT_BIND_FIRST, on_mouse, term);
 
-    // show changes
-    term->render();
-
-    int key    = 0;
     int frames = 0;
-    while ((key = getch()) != 0) {
-        term->render();
-        if (key == '\n') {
-            printf("Got ENTER, exiting\n");
-            break;
-        } else if (key == KEY_RESIZE) {
-            term->handle_resize();
-        }
+    while (true) {
+        // handle timers and IO that has come up
+        tickit_tick(term->root, TICKIT_RUN_NOHANG);
+        std::stringstream info;
+        info << "Frame: " << frames << "; Lines: " << term->height;
+        info << "; Columns: " << term->width << "\n";
+        info << "Key: " << last_key << "  Mouse: " << last_mouse;
+        term->set_info_string(info.str());
+        term->renderFrame();
+        usleep(33333);
         frames++;
     }
 
