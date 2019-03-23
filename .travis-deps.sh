@@ -24,5 +24,5 @@ tar -xzvf libtermkey-0.22.tar.gz
 (
 \cd libtermkey-0.22
 make all
-sudo make install
+sudo make PREFIX=/usr install
 )
