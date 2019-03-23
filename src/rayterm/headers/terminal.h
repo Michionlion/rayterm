@@ -2,6 +2,7 @@
 #define _RAYTERM_TERMINAL_H_
 
 #include <cstdint>
+#include <string>
 #include "tickit.h"
 
 using color = uint8_t;
@@ -15,11 +16,11 @@ using color = uint8_t;
  */
 class Terminal {
    public:
-    // TickitWindow* info;
     TickitWindow* main;
     Tickit* root;
     TickitTerm* term;
 
+    std::string info;
     int width, height;
 
     Terminal();
@@ -29,7 +30,7 @@ class Terminal {
 
     // set_info_string(TERMINAL*, char*) sets the configurable string to be shown in the info window
     // of the terminal given.
-    // void set_info_string(const char* str);
+    void set_info_string(std::string info);
 };
 
 #endif

@@ -73,6 +73,9 @@ void Terminal::renderFrame() {
 
     // expose
     tickit_window_expose(this->main, NULL);
+void Terminal::set_info_string(std::string info) {
+    // move to ensure performance if possible
+    this->info = std::move(info);
 }
 
 int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
