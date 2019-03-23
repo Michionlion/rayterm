@@ -6,6 +6,8 @@
 #include "tickit.h"
 
 #define COLOR_ERROR 1
+#define RECT(t, l, li, co) \
+    (TickitRect) { .top = (t), .left = (l), .lines = (li), .cols = (co) }
 
 int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
 int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
