@@ -34,8 +34,8 @@ Terminal::Terminal() {
 
     tickit_term_get_size(term, &height, &width);
 
-    tickit_window_bind_event(main, TICKIT_WINDOW_ON_GEOMCHANGE, TICKIT_BIND_FIRST, resize, this);
-    tickit_window_bind_event(main, TICKIT_WINDOW_ON_EXPOSE, TICKIT_BIND_FIRST, render, this);
+    tickit_window_bind_event(main, TICKIT_WINDOW_ON_GEOMCHANGE, TICKIT_BIND_UNBIND, resize, this);
+    tickit_window_bind_event(main, TICKIT_WINDOW_ON_EXPOSE, TICKIT_BIND_UNBIND, render, this);
 
     //
     // initscr();
@@ -84,29 +84,36 @@ static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* 
     auto info              = static_cast<TickitExposeEventInfo*>(_info);
     TickitRenderBuffer* rb = info->rb;
 
-    int cols       = tickit_window_cols(win);
+    // int cols       = tickit_window_cols(win);
     TickitPen* pen = tickit_pen_new();
 
     tickit_renderbuffer_eraserect(rb, &info->rect);
 
+    // tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, COLOR_ERROR);
+    // tickit_renderbuffer_setpen(rb, pen);
+    // tickit_renderbuffer_text_at(rb, 1, 0, "Color:");
+    //
+    // tickit_renderbuffer_goto(rb, 2, 0);
+    // for (int x = 0; x < cols; x++) {
+    //     tickit_pen_set_colour_attr(pen, TICKIT_PEN_BG, x > cols / 2 ? COLOR_ERROR : 0);
+    //     tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_BG, make_color(255 * x / (cols - 1), 0,
+    //     0));
+    //
+    //     tickit_renderbuffer_setpen(rb, pen);
+    //     tickit_renderbuffer_text(rb, " ");
+    // }
+    // tickit_pen_clear_attr(pen, TICKIT_PEN_BG);
+
+    tickit_renderbuffer_goto(rb, 0, 0);
     tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, COLOR_ERROR);
-    tickit_renderbuffer_setpen(rb, pen);
-    tickit_renderbuffer_text_at(rb, 1, 0, "Color:");
-
-    tickit_renderbuffer_goto(rb, 2, 0);
-    for (int x = 0; x < cols; x++) {
-        tickit_pen_set_colour_attr(pen, TICKIT_PEN_BG, x > cols / 2 ? COLOR_ERROR : 0);
-        tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_BG, make_color(255 * x / (cols - 1), 0, 0));
-
-        tickit_renderbuffer_setpen(rb, pen);
-        tickit_renderbuffer_text(rb, " ");
-    }
-    tickit_pen_clear_attr(pen, TICKIT_PEN_BG);
-
-    tickit_renderbuffer_goto(rb, 6, 0);
-    tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_FG, make_color(200, 255, 175));
+    tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_FG, make_color(255, 255, 255));
     tickit_renderbuffer_setpen(rb, pen);
     tickit_renderbuffer_text(rb, tm->info.c_str());
+    tickit_pen_clear_attr(pen, TICKIT_PEN_FG);
+
+    tickit_renderbuffer_flush_to_term(rb, tm->term);
+
+    tickit_debug_logf("Ue", "Rendered '%s'", tm->info.c_str());
 
     return 1;
 }

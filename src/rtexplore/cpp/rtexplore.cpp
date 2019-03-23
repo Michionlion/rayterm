@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <cstdio>
+#include <iostream>
 #include <sstream>
 #include "rayterm"
 #include "tickit.h"
@@ -9,7 +10,7 @@ std::string last_mouse;
 
 static int on_key(TickitTerm *term, TickitEventFlags flags, void *_info, void *user) {
     auto info = static_cast<TickitKeyEventInfo *>(_info);
-    auto tm   = static_cast<Terminal *>(user);
+    // auto tm   = static_cast<Terminal *>(user);
 
     switch (info->type) {
         case TICKIT_KEYEV_TEXT:
@@ -28,7 +29,7 @@ static int on_key(TickitTerm *term, TickitEventFlags flags, void *_info, void *u
 
 static int on_mouse(TickitTerm *term, TickitEventFlags flags, void *_info, void *user) {
     auto info = static_cast<TickitMouseEventInfo *>(_info);
-    auto tm   = static_cast<Terminal *>(user);
+    // auto tm   = static_cast<Terminal *>(user);
 
     switch (info->type) {
         case TICKIT_MOUSEEV_PRESS:
@@ -63,24 +64,27 @@ static int on_mouse(TickitTerm *term, TickitEventFlags flags, void *_info, void 
 }
 
 int main(int argc, char *argv[]) {
-    // initalize ncurses
+    tickit_debug_init();
+
+    // initalize libtickit
     auto term = new Terminal();
 
-    tickit_term_bind_event(term->term, TICKIT_TERM_ON_KEY, TICKIT_BIND_FIRST, on_key, term);
-    tickit_term_bind_event(term->term, TICKIT_TERM_ON_MOUSE, TICKIT_BIND_FIRST, on_mouse, term);
+    tickit_term_bind_event(term->term, TICKIT_TERM_ON_KEY, TICKIT_BIND_UNBIND, on_key, term);
+    tickit_term_bind_event(term->term, TICKIT_TERM_ON_MOUSE, TICKIT_BIND_UNBIND, on_mouse, term);
 
-    int frames = 0;
-    while (true) {
+    int frame = 0;
+    while (last_key.compare("text q") != 0) {
+        tickit_debug_logf("Ut", "frame %d", frame);
         // handle timers and IO that has come up
         tickit_tick(term->root, TICKIT_RUN_NOHANG);
         std::stringstream info;
-        info << "Frame: " << frames << "; Lines: " << term->height;
-        info << "; Columns: " << term->width << "\n";
+        info << "Frame: " << frame << "  Lines: " << term->height;
+        info << "  Columns: " << term->width << "  ";
         info << "Key: " << last_key << "  Mouse: " << last_mouse;
         term->set_info_string(info.str());
         term->renderFrame();
-        usleep(33333);
-        frames++;
+        usleep(66666);
+        frame++;
     }
 
     delete term;
