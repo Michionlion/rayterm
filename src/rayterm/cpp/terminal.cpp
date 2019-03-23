@@ -5,7 +5,7 @@
 #include <cstring>
 #include "tickit.h"
 
-#define COL_ERROR 1
+#define COLOR_ERROR 1
 
 int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
 int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
@@ -72,29 +72,31 @@ void Terminal::renderFrame() {
     // convert buffer
 
     // expose
-    tickit_window_expose(this->main, NULL);
+    tickit_window_expose(this->main, nullptr);
+}
+
 void Terminal::set_info_string(std::string info) {
     // move to ensure performance if possible
     this->info = std::move(info);
 }
 
 int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
-    Terminal* tm                = static_cast<Terminal*>(data);
-    TickitExposeEventInfo* info = static_cast<TickitExposeEventInfo*>(_info);
-    TickitRenderBuffer* rb      = info->rb;
+    auto tm                = static_cast<Terminal*>(data);
+    auto info              = static_cast<TickitExposeEventInfo*>(_info);
+    TickitRenderBuffer* rb = info->rb;
 
     int cols       = tickit_window_cols(win);
     TickitPen* pen = tickit_pen_new();
 
     tickit_renderbuffer_eraserect(rb, &info->rect);
 
-    tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, COL_ERROR);
+    tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, COLOR_ERROR);
     tickit_renderbuffer_setpen(rb, pen);
     tickit_renderbuffer_text_at(rb, 1, 0, "Color:");
 
     tickit_renderbuffer_goto(rb, 2, 0);
     for (int x = 0; x < cols; x++) {
-        tickit_pen_set_colour_attr(pen, TICKIT_PEN_BG, x > cols / 2 ? COL_ERROR : 0);
+        tickit_pen_set_colour_attr(pen, TICKIT_PEN_BG, x > cols / 2 ? COLOR_ERROR : 0);
         tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_BG, make_color(255 * x / (cols - 1), 0, 0));
 
         tickit_renderbuffer_setpen(rb, pen);
@@ -105,7 +107,7 @@ int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
     tickit_renderbuffer_goto(rb, tm->height - 1, 0);
     tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_FG, make_color(200, 255, 175));
     tickit_renderbuffer_setpen(rb, pen);
-    tickit_renderbuffer_text(rb, " ");
+    tickit_renderbuffer_text(rb, tm->info.c_str());
 
     // tickit_renderbuffer_flush_to_term
 
@@ -113,11 +115,11 @@ int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
 }
 
 int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
-    Terminal* tm = static_cast<Terminal*>(data);
+    auto tm = static_cast<Terminal*>(data);
     tickit_term_refresh_size(tm->term);
     tickit_term_get_size(tm->term, &(tm->height), &(tm->width));
     // re-expose the entire window if it changes shape
-    tickit_window_expose(win, NULL);
+    tickit_window_expose(win, nullptr);
     return 1;
 }
 
