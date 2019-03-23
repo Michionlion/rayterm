@@ -21,6 +21,9 @@ def validate_project_settings() {
     if(!tinyobjloader_location.startsWith("/")) {
         tinyobjloader_location = "${projectDir.getPath()}/${tinyobjloader_location}"
     }
+    if(!libtickit_location.startsWith("/")) {
+        libtickit_location = "${projectDir.getPath()}/${libtickit_location}"
+    }
     if(!asset_folder.startsWith("/")) {
         asset_folder = "${projectDir.getPath()}/${asset_folder}"
     }
@@ -57,6 +60,15 @@ model {
             }
             tinyobjloader {
                 headers.srcDirs "${tinyobjloader_location}"
+            }
+            libtickit {
+                headers.srcDirs "${libtickit_location}/libtickit-0.3/include"
+                binaries.withType(SharedLibraryBinary) {
+                    sharedLibraryFile = file("${libtickit_location}/libtickit-0.3/.libs/libtickit.so")
+                }
+                binaries.withType(StaticLibraryBinary) {
+                    staticLibraryFile = file("${libtickit_location}/libtickit-0.3/.libs/libtickit.a")
+                }
             }
         }
     }
@@ -120,7 +132,7 @@ model {
             cppCompiler.args "-std=c++11", "-msse4", "-fPIC", "-Wall"
             setCuArgs(cppCompiler)
 
-            if (buildType == buildTypes.debug) {
+            if(buildType == buildTypes.debug) {
                 cppCompiler.args "-g"
             } else if(buildType == buildTypes.release) {
                 cppCompiler.args "-O3", "-funroll-loops", "-march=native", "-mfpmath=sse"
@@ -313,22 +325,46 @@ task buildCuda(type: Exec) {
     executable "${cuda_location}/build.sh"
 }
 
+task buildLibtickit(type: Exec) {
+    dependsOn 'pullLibtickit'
+    shouldRunAfter 'pullLibtickit'
+    def tickit = "${libtickit_location}/libtickit-0.3"
+    commandLine "make", "-C", "${tickit}", "all"
+}
+
 task pullTinyObjLoader(type: Download) {
     doFirst { file(tinyobjloader_location).mkdirs() }
     src = 'https://github.com/syoyo/tinyobjloader/releases/latest/download/tiny_obj_loader.h'
     target = file("${tinyobjloader_location}/tiny_obj_loader.h")
 }
 
+task pullLibtickit(type: Download) {
+    doFirst { file(libtickit_location).mkdirs() }
+    src = 'http://www.leonerd.org.uk/code/libtickit/libtickit-0.3.tar.gz'
+    target = file("${libtickit_location}/libtickit.tar.gz")
+    doLast {
+        if(!file("${libtickit_location}/libtickit-0.3").exists()) {
+            copy {
+                from tarTree(resources.gzip(target))
+                into file(libtickit_location)
+            }
+        }
+        target.delete()
+    }
+}
+
 task pullDeps(type: Exec) {
     doFirst { println 'Updating dependencies' }
     commandLine 'git', 'submodule', 'update', '--init', '--recursive', '--remote', '--merge'
     dependsOn 'pullTinyObjLoader'
+    dependsOn 'pullLibtickit'
 }
 
 task deps {
     dependsOn 'pullDeps'
     dependsOn 'buildGoogleTest'
     dependsOn 'buildCuda'
+    dependsOn 'buildLibtickit'
 }
 
 // install the rayterm.so library
@@ -340,6 +376,7 @@ task install(type: Copy) {
 
 task test {
     dependsOn "clean"
+    dependsOn "compileCu"
 }
 
 tasks.withType(RunTestExecutable) { task ->
