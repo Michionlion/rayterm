@@ -5,7 +5,6 @@
 # Build directories
 /build/
 /lib/tinyobjloader/*
-/lib/libtickit/*
 
 # Gradle
 

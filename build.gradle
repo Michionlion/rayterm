@@ -62,12 +62,12 @@ model {
                 headers.srcDirs "${tinyobjloader_location}"
             }
             libtickit {
-                headers.srcDirs "${libtickit_location}/libtickit-0.3/include"
+                headers.srcDirs "${libtickit_location}/include"
                 binaries.withType(SharedLibraryBinary) {
-                    sharedLibraryFile = file("${libtickit_location}/libtickit-0.3/.libs/libtickit.so")
+                    sharedLibraryFile = file("${libtickit_location}/.libs/libtickit.so")
                 }
                 binaries.withType(StaticLibraryBinary) {
-                    staticLibraryFile = file("${libtickit_location}/libtickit-0.3/.libs/libtickit.a")
+                    staticLibraryFile = file("${libtickit_location}/.libs/libtickit.a")
                 }
             }
         }
@@ -326,10 +326,9 @@ task buildCuda(type: Exec) {
 }
 
 task buildLibtickit(type: Exec) {
-    dependsOn 'pullLibtickit'
-    shouldRunAfter 'pullLibtickit'
-    def tickit = "${libtickit_location}/libtickit-0.3"
-    commandLine "make", "-C", "${tickit}", "all"
+    dependsOn 'pullDeps'
+    shouldRunAfter 'pullDeps'
+    commandLine "make", "-C", "${libtickit_location}", "all"
 }
 
 task pullTinyObjLoader(type: Download) {
@@ -338,26 +337,10 @@ task pullTinyObjLoader(type: Download) {
     target = file("${tinyobjloader_location}/tiny_obj_loader.h")
 }
 
-task pullLibtickit(type: Download) {
-    doFirst { file(libtickit_location).mkdirs() }
-    src = 'http://www.leonerd.org.uk/code/libtickit/libtickit-0.3.tar.gz'
-    target = file("${libtickit_location}/libtickit.tar.gz")
-    doLast {
-        if(!file("${libtickit_location}/libtickit-0.3").exists()) {
-            copy {
-                from tarTree(resources.gzip(target))
-                into file(libtickit_location)
-            }
-        }
-        target.delete()
-    }
-}
-
 task pullDeps(type: Exec) {
     doFirst { println 'Updating dependencies' }
     commandLine 'git', 'submodule', 'update', '--init', '--recursive', '--remote', '--merge'
     dependsOn 'pullTinyObjLoader'
-    dependsOn 'pullLibtickit'
 }
 
 task deps {

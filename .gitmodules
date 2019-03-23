@@ -10,3 +10,6 @@
 [submodule "lib/optix"]
 	path = lib/optix
 	url = https://github.com/Michionlion/optix.git
+[submodule "lib/libtickit"]
+	path = lib/libtickit
+	url = https://github.com/Michionlion/libtickit.git
