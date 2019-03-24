@@ -5,5 +5,6 @@
 #include "unicode_buffer.h"
 
 UnicodeBuffer* translate_halfpixel(PixelBuffer* pixels);
+UnicodeBuffer* translate_halfpixel(PixelBuffer* pixels, UnicodeBuffer* unicode);
 
 #endif
