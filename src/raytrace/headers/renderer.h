@@ -20,7 +20,7 @@ class PixelBuffer {
     RTsize width, height;
     bool mapped;
 
-    explicit PixelBuffer(optix::Buffer buffer) {
+    explicit PixelBuffer(const optix::Buffer& buffer) {
         backing_buffer = buffer;
         backing_buffer->addReference();
         backing_buffer->getSize(width, height);
@@ -111,8 +111,8 @@ class Renderer {
             delete camera;
             delete programs;
             delete resources;
-            context->removeReference();
             raw_buffer->removeReference();
+            context->destroy();
         } catch (const optix::Exception& ex) {
             printf("~Renderer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
         }
