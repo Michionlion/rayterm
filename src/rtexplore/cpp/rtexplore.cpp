@@ -5,87 +5,110 @@
 #include "rayterm"
 #include "tickit.h"
 
-std::string last_key;
-std::string last_mouse;
+struct tick_loop_vars {
+    Terminal *tm;
+    int frame;
+    std::string last_key;
+    std::string last_mouse;
+};
 
 static int on_key(TickitTerm *term, TickitEventFlags flags, void *_info, void *user) {
     auto info = static_cast<TickitKeyEventInfo *>(_info);
-    // auto tm   = static_cast<Terminal *>(user);
+    auto tlv  = static_cast<tick_loop_vars *>(user);
 
     switch (info->type) {
         case TICKIT_KEYEV_TEXT:
-            last_key = "text ";
+            tlv->last_key = "text ";
             break;
         case TICKIT_KEYEV_KEY:
-            last_key = "key ";
+            tlv->last_key = "key ";
             break;
         default:
-            return 0;
+            return false;
     }
-    last_key += info->str;
+    tlv->last_key += info->str;
 
-    return 1;
+    tickit_debug_logf("Uik", "Key Event: %s", tlv->last_key.c_str());
+
+    if (info->str[0] == 'q') {
+        tickit_debug_logf("Ui", "Got EXIT!");
+        tickit_stop(tlv->tm->root);
+    }
+
+    return true;
 }
 
 static int on_mouse(TickitTerm *term, TickitEventFlags flags, void *_info, void *user) {
     auto info = static_cast<TickitMouseEventInfo *>(_info);
-    // auto tm   = static_cast<Terminal *>(user);
+    auto tlv  = static_cast<tick_loop_vars *>(user);
 
     switch (info->type) {
         case TICKIT_MOUSEEV_PRESS:
-            last_mouse = "press ";
+            tlv->last_mouse = "press ";
             break;
         case TICKIT_MOUSEEV_DRAG:
-            last_mouse = "drag ";
+            tlv->last_mouse = "drag ";
             break;
         case TICKIT_MOUSEEV_RELEASE:
-            last_mouse = "release ";
+            tlv->last_mouse = "release ";
             break;
         case TICKIT_MOUSEEV_WHEEL:
-            last_mouse = "wheel ";
+            tlv->last_mouse = "wheel ";
             break;
         default:
-            return 0;
+            return false;
     }
 
     if (info->type == TICKIT_MOUSEEV_WHEEL) {
-        last_mouse += (info->button == TICKIT_MOUSEWHEEL_DOWN) ? "down" : "up";
+        tlv->last_mouse += (info->button == TICKIT_MOUSEWHEEL_DOWN) ? "down" : "up";
     } else {
-        last_mouse += "button ";
-        last_mouse += std::to_string(info->button);
+        tlv->last_mouse += "button ";
+        tlv->last_mouse += std::to_string(info->button);
     }
 
-    last_mouse += " at ";
-    last_mouse += std::to_string(info->line);
-    last_mouse += ", ";
-    last_mouse += std::to_string(info->col);
+    tlv->last_mouse += " at ";
+    tlv->last_mouse += std::to_string(info->line);
+    tlv->last_mouse += ", ";
+    tlv->last_mouse += std::to_string(info->col);
 
-    return 1;
+    tickit_debug_logf("Uim", "Mouse Event: %s", tlv->last_mouse.c_str());
+
+    return true;
+}
+
+static int tick(Tickit *root, TickitEventFlags flags, void *info, void *user) {
+    auto tlv = static_cast<tick_loop_vars *>(user);
+    // handle timers and IO that has come up
+    // tickit_tick(tm->root, TICKIT_RUN_NOHANG);
+    std::stringstream info_str;
+    info_str << "Frame: " << tlv->frame << "  Lines: " << tlv->tm->height;
+    info_str << "  Columns: " << tlv->tm->width << "  ";
+    info_str << "Key: " << tlv->last_key << "  Mouse: " << tlv->last_mouse;
+    tlv->tm->set_info_string(info_str.str());
+    tlv->tm->renderFrame();
+    // usleep(33333);
+    // usleep(6060);
+    tlv->frame++;
+
+    // enqueue next frame
+    tickit_watch_later(tlv->tm->root, TICKIT_BIND_UNBIND, &tick, tlv);
+
+    return true;
 }
 
 int main(int argc, char *argv[]) {
     tickit_debug_init();
 
     // initalize libtickit
-    auto term = new Terminal();
+    auto tm  = new Terminal();
+    auto tlv = new tick_loop_vars();
+    tlv->tm  = tm;
 
-    tickit_term_bind_event(term->term, TICKIT_TERM_ON_KEY, TICKIT_BIND_UNBIND, on_key, term);
-    tickit_term_bind_event(term->term, TICKIT_TERM_ON_MOUSE, TICKIT_BIND_UNBIND, on_mouse, term);
+    tickit_term_bind_event(tm->term, TICKIT_TERM_ON_KEY, TICKIT_BIND_UNBIND, on_key, tlv);
+    tickit_term_bind_event(tm->term, TICKIT_TERM_ON_MOUSE, TICKIT_BIND_UNBIND, on_mouse, tlv);
+    tickit_watch_later(tm->root, TICKIT_BIND_UNBIND, &tick, tlv);
 
-    int frame = 0;
-    while (last_key.compare("text q") != 0) {
-        tickit_debug_logf("Ut", "frame %d", frame);
-        // handle timers and IO that has come up
-        tickit_tick(term->root, TICKIT_RUN_NOHANG);
-        std::stringstream info;
-        info << "Frame: " << frame << "  Lines: " << term->height;
-        info << "  Columns: " << term->width << "  ";
-        info << "Key: " << last_key << "  Mouse: " << last_mouse;
-        term->set_info_string(info.str());
-        term->renderFrame();
-        usleep(66666);
-        frame++;
-    }
-
-    delete term;
+    // start program
+    tickit_run(tm->root);
+    delete tm;
 }
