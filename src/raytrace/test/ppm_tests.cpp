@@ -25,7 +25,7 @@ TEST(RaytracerTest, Screenshot) {
     printf("Rendered in %ldms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count());
 
-    PixelBuffer* buffer = renderer->buffer();
+    PixelBuffer* buffer = renderer->buffer()->map();
     begin               = std::chrono::steady_clock::now();
     write_buffer("test_image.ppm", buffer);
     end = std::chrono::steady_clock::now();
