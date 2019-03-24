@@ -3,7 +3,9 @@
 
 #include <cstdint>
 #include <string>
+#include "raytrace"
 #include "tickit.h"
+#include "unicode_buffer.h"
 
 using color = uint8_t;
 
@@ -15,6 +17,8 @@ using color = uint8_t;
  * This class is a singleton (created from stdscr by default), but this is not enforced.
  */
 class Terminal {
+    PixelBuffer* pixelbuffer;
+
    public:
     TickitWindow* main;
     Tickit* root;
@@ -23,11 +27,14 @@ class Terminal {
     std::string info;
     unsigned int width, height;
 
+    Renderer* renderer;
+    UnicodeBuffer* buffer;
 
     Terminal();
     ~Terminal();
 
     void renderFrame();
+    void resize(unsigned int width, unsigned int height);
 
     // set_info_string(TERMINAL*, char*) sets the configurable string to be shown in the info window
     // of the terminal given.

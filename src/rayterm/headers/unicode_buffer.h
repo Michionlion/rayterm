@@ -51,7 +51,7 @@ class UnicodeBuffer {
     ~UnicodeBuffer() { free(data); }
 
     const unicode_cell& get(int x, int y) const { return data[y * width + x]; }
-    void set(int x, int y, unicode_cell& cell) { data[y * width + x] = cell; }
+    void set(int x, int y, const unicode_cell& cell) { data[y * width + x] = cell; }
 };
 
 #endif

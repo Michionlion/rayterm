@@ -55,4 +55,5 @@ TEST(UnicodeBuffer, HalfPixelTranslation) {
     }
 
     delete pixels;
+    delete unicode;
 }

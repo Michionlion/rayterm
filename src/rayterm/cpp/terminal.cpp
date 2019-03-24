@@ -63,6 +63,10 @@ Terminal::~Terminal() {
 
     tickit_term_unref(term);
     tickit_unref(root);
+
+    delete renderer;
+    delete buffer;
+    delete pixelbuffer;
 }
 
 void Terminal::renderFrame() {
@@ -72,6 +76,14 @@ void Terminal::renderFrame() {
 
     // expose
     tickit_window_expose(this->main, nullptr);
+}
+
+void Terminal::resize(unsigned int width, unsigned int height) {
+    this->width  = width;
+    this->height = height;
+    delete pixelbuffer;
+    renderer->resize(width, height * 2);
+    pixelbuffer = renderer->buffer();
 }
 
 void Terminal::set_info_string(std::string info) {
