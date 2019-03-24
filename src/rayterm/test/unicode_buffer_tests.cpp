@@ -20,7 +20,7 @@ TEST(UnicodeBuffer, HalfPixelTranslation) {
         }
     }
     pixel_buffer->unmap();
-    PixelBuffer* pixels = new PixelBuffer(pixel_buffer);
+    PixelBuffer* pixels = (new PixelBuffer(pixel_buffer))->map();
 
     // for (int y = 0; y < height; y++) {
     //     for (int x = 0; x < width; x++) {
@@ -53,4 +53,6 @@ TEST(UnicodeBuffer, HalfPixelTranslation) {
             EXPECT_EQ(int(cell.bg_b), x + y * 2 + 1);
         }
     }
+
+    delete pixels;
 }
