@@ -22,30 +22,34 @@ int main(int argc, char* argv[]) {
 
         auto renderer = new Renderer(width, height, samples);
         std::chrono::steady_clock::time_point begin, end;
-        int64_t times[n];
+        int64_t times[n + 1];
 
-        for (int i = 0; i < n; i++) {
-            delete renderer;
-            renderer = new Renderer(width, height, samples);
+        for (int i = 0; i < n + 1; i++) {
+            // delete renderer;
+            // renderer = new Renderer(width, height, samples);
 
-            printf("Start run %d\n", i + 1);
+            if (i > 0)
+                printf("Start run %d\n", i);
             begin = std::chrono::steady_clock::now();
             renderer->launch();
             end = std::chrono::steady_clock::now();
-            printf("End run %d, ", i + 1);
+            if (i > 0)
+                printf("End run %d, ", i);
 
             times[i] = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-            printf("time: %ldms\n", times[i]);
+            if (i > 0)
+                printf("time: %ldms\n", times[i]);
         }
 
         int64_t average_time = 0;
-        for (int i = 0; i < n; i++) {
+        for (int i = 1; i < n + 1; i++) {
             average_time += times[i];
         }
         average_time /= n;
 
         printf("\nSUMMARY\n\nRendered %dx%d, %dspp images in %ldms on average\n", width, height,
             samples, average_time);
+        printf("First run (loading) took %ldms\n", times[0]);
 
         begin = std::chrono::steady_clock::now();
         write_buffer("test_image.ppm", renderer->buffer());
