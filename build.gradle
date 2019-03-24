@@ -73,34 +73,39 @@ model {
         }
     }
     components {
+        // component library
         raytrace(NativeLibrarySpec) {
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
-            sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: optix_link_type
             sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
 
         }
+        // primary library
         rayterm(NativeLibrarySpec) {
-            sources.cpp.lib library: 'libtickit', linkage: 'shared'
+            sources.cpp.lib library: 'libtickit', linkage: tickit_link_type
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
-            sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: optix_link_type
             sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
-            sources.cpp.lib library: 'raytrace', linkage: internal_link_type
+            sources.cpp.lib library: 'raytrace', linkage: 'static'
         }
+        // "test" user of primary library
         rtexplore(NativeExecutableSpec) {
-            sources.cpp.lib library: 'libtickit', linkage: 'shared'
+            sources.cpp.lib library: 'libtickit', linkage: tickit_link_type
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
-            sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: optix_link_type
             sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
-            sources.cpp.lib library: 'raytrace', linkage: internal_link_type
-            sources.cpp.lib library: "rayterm", linkage: internal_link_type
+            sources.cpp.lib library: 'raytrace', linkage: 'static'
+            // this must be shared, no idea why
+            sources.cpp.lib library: "rayterm", linkage: 'shared'
         }
+        // convenience timer executable
         rtime(NativeExecutableSpec) {
-            sources.cpp.lib library: 'libtickit', linkage: 'shared'
+            sources.cpp.lib library: 'libtickit', linkage: tickit_link_type
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
-            sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: optix_link_type
             sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
-            sources.cpp.lib library: 'raytrace', linkage: internal_link_type
-            sources.cpp.lib library: "rayterm", linkage: internal_link_type
+            sources.cpp.lib library: 'raytrace', linkage: 'static'
+            sources.cpp.lib library: "rayterm", linkage: 'static'
         }
     }
     testSuites {
@@ -108,22 +113,23 @@ model {
             testing $.components.raytrace
             sources.cpp.source.srcDir "src/raytrace/test"
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
-            sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: optix_link_type
             sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
         }
         raytermTest(GoogleTestTestSuiteSpec) {
             testing $.components.rayterm
             sources.cpp.source.srcDir "src/rayterm/test"
-            sources.cpp.lib library: 'libtickit', linkage: 'shared'
+            sources.cpp.lib library: 'libtickit', linkage: tickit_link_type
             sources.cpp.lib library: 'cuda', linkage: cuda_link_type
-            sources.cpp.lib library: 'optix', linkage: 'shared'
+            sources.cpp.lib library: 'optix', linkage: optix_link_type
             sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
-            sources.cpp.lib library: 'raytrace', linkage: internal_link_type
+            sources.cpp.lib library: 'raytrace', linkage: 'static'
         }
     }
     binaries {
         all {
-            linker.args "-ltermkey"//, "-ltickit", "-L"
+            // assumes libtermkey is installed (internal dependency of libtickit)
+            linker.args "-ltermkey"
             if(project.hasProperty('SAMPLES'))
                 cppCompiler.define "SAMPLES", "${project.getProperty('SAMPLES')}"
             if(project.hasProperty('RES_MULT'))
