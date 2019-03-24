@@ -46,7 +46,7 @@ class Resources {
             free(meshes);
 
             for (auto material : materials) {
-                material->destroy();
+                material->removeReference();
             }
         } catch (const optix::Exception& ex) {
             printf("~Resources Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
