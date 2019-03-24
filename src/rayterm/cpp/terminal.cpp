@@ -17,51 +17,46 @@ inline TickitPenRGB8 make_color(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 Terminal::Terminal() {
+    // create Renderer
+
+    renderer    = new Renderer(width, height * 2, 32);
+    buffer      = new UnicodeBuffer(width, height);
+    pixelbuffer = renderer->buffer();
+    pixelbuffer->unmap();
+
+    // create tickit
+
     root = tickit_new_stdio();
     term = tickit_get_term(root);
 
     tickit_setctl_int(root, TICKIT_CTL_USE_ALTSCREEN, true);
     tickit_term_setctl_int(term, TICKIT_TERMCTL_CURSORVIS, false);
     tickit_term_setctl_int(term, TICKIT_TERMCTL_KEYPAD_APP, true);
-    tickit_term_setctl_int(term, TICKIT_TERMCTL_MOUSE, TICKIT_TERM_MOUSEMODE_MOVE);
+    tickit_term_setctl_int(term, TICKIT_TERMCTL_MOUSE, TICKIT_TERM_MOUSEMODE_OFF);
 
     main = tickit_get_rootwin(root);
     if (!main) {
         fprintf(stderr, "Cannot create TickitTerm - %s\n", strerror(errno));
-        free(root);
+        tickit_unref(root);
         exit(1);
     }
 
-    tickit_term_get_size(term, &height, &width);
+    int w, h;
+    tickit_term_get_size(term, &h, &w);
+    width  = w;
+    height = h;
 
-    tickit_window_bind_event(main, TICKIT_WINDOW_ON_GEOMCHANGE, TICKIT_BIND_UNBIND, resize, this);
-    tickit_window_bind_event(main, TICKIT_WINDOW_ON_EXPOSE, TICKIT_BIND_UNBIND, render, this);
-
-    //
-    // initscr();
-    // start_color();
-    // cbreak();
-    // noecho();
-    //
-    // curs_set(0);
-    //
-    // init_pair(1, COLOR_WHITE, COLOR_BLUE);
-    // init_pair(2, COLOR_WHITE, COLOR_GREEN);
-    //
-    // main = subwin(stdscr, LINES - 1, 0, 0, 0);
-    // info = subwin(stdscr, 1, 0, LINES - 1, 0);
-    // wbkgd(main, COLOR_PAIR(2));
-    // wbkgd(info, COLOR_PAIR(1));
-    //
-    // keypad(main, true);
-    // keypad(info, true);
+    tickit_term_bind_event(term, TICKIT_TERM_ON_RESIZE, TickitBindFlags(0), &termresize, this);
+    tickit_window_bind_event(
+        main, TICKIT_WINDOW_ON_GEOMCHANGE, TickitBindFlags(0), &winresize, this);
+    tickit_window_bind_event(main, TICKIT_WINDOW_ON_EXPOSE, TickitBindFlags(0), &render, this);
 }
 
 // Close down Terminal
 Terminal::~Terminal() {
     tickit_window_close(main);
 
-    tickit_term_unref(term);
+    // also unrefs term and root
     tickit_unref(root);
 
     delete renderer;
@@ -71,8 +66,9 @@ Terminal::~Terminal() {
 
 void Terminal::renderFrame() {
     // issue raytrace
+    renderer->launch();
 
-    // convert buffer
+    buffer = translate_halfpixel(pixelbuffer, buffer);
 
     // expose
     tickit_window_expose(this->main, nullptr);
@@ -130,20 +126,30 @@ static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* 
     return 1;
 }
 
-static int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
-    auto tm = static_cast<Terminal*>(data);
-    tickit_term_refresh_size(tm->term);
-    tickit_term_get_size(tm->term, &(tm->height), &(tm->width));
-    // re-expose the entire window if it changes shape
-    tickit_window_expose(win, nullptr);
+static int winresize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data) {
+    auto info = static_cast<TickitResizeEventInfo*>(_info);
+    auto tm   = static_cast<Terminal*>(data);
+    tickit_debug_logf("Urw", "Terminal resized to %dx%d (wininfo)", info->cols, info->lines);
+    // re-render
+    tm->renderFrame();
     return 1;
 }
 
-// auto-refreshes info window
-// void Terminal::set_info_string(const char* str) {
-//     wclear(info);
-//     attron(A_BOLD);
-//     mvwaddstr(info, 0, 0, str);
-//     attroff(A_BOLD);
-//     wrefresh(info);
-// }
+static int termresize(TickitTerm* win, TickitEventFlags flags, void* _info, void* data) {
+    auto info = static_cast<TickitResizeEventInfo*>(_info);
+    auto tm   = static_cast<Terminal*>(data);
+
+    tickit_debug_logf("Urt", "Terminal resized to %dx%d (info)", info->cols, info->lines);
+
+    tickit_term_refresh_size(tm->term);
+
+    int w, h;
+    tickit_term_get_size(tm->term, &h, &w);
+    tickit_debug_logf("Urt", "Terminal resized to %dx%d (term)", w, h);
+
+    tm->resize(w, h);
+
+    tickit_window_reposition(tm->main, w, h);
+
+    return 1;
+}
