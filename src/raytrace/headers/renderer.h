@@ -36,7 +36,7 @@ class PixelBuffer {
 };
 
 class Renderer {
-    int width, height, samples;
+    unsigned int width, height, samples;
 
     optix::Context context;
     optix::Buffer raw_buffer;

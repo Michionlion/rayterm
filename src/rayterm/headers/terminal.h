@@ -21,7 +21,8 @@ class Terminal {
     TickitTerm* term;
 
     std::string info;
-    int width, height;
+    unsigned int width, height;
+
 
     Terminal();
     ~Terminal();

@@ -145,7 +145,7 @@ void Renderer::initWorld() {
     context["sysRootObject"]->set(groupRoot);
 }
 
-void Renderer::resize(int width, int height) {
+void Renderer::resize(unsigned int width, unsigned int height) {
     this->width  = width;
     this->height = height;
     raw_buffer->setSize(width, height);
