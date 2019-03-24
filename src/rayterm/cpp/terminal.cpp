@@ -30,7 +30,17 @@ Terminal::Terminal() {
     // create tickit
 
     root = tickit_new_stdio();
+    if (!root) {
+        fprintf(stderr, "Cannot create TickitWindow - %s\n", strerror(errno));
+        tickit_unref(root);
+        throw std::runtime_error("Failed to initialize Tickit!");
+    }
     term = tickit_get_term(root);
+    if (!term) {
+        fprintf(stderr, "Cannot create TickitTerm- %s\n", strerror(errno));
+        tickit_unref(root);
+        throw std::runtime_error("Failed to get TickitTerm!");
+    }
 
     tickit_setctl_int(root, TICKIT_CTL_USE_ALTSCREEN, true);
     tickit_term_setctl_int(term, TICKIT_TERMCTL_CURSORVIS, false);
@@ -39,9 +49,9 @@ Terminal::Terminal() {
 
     main = tickit_get_rootwin(root);
     if (!main) {
-        fprintf(stderr, "Cannot create TickitTerm - %s\n", strerror(errno));
+        fprintf(stderr, "Cannot create TickitWindow - %s\n", strerror(errno));
         tickit_unref(root);
-        exit(1);
+        throw std::runtime_error("Failed to get TickitWindow");
     }
 
     int w, h;
