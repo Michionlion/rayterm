@@ -23,6 +23,7 @@ class PixelBuffer {
     explicit PixelBuffer(optix::Buffer buffer) {
         backing_buffer = buffer;
         buffer->getSize(width, height);
+        mapped = false;
     }
 
     ~PixelBuffer() { unmap(); }
