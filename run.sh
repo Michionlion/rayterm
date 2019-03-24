@@ -1,5 +1,7 @@
 #!/bin/bash
 
+FONT="DejaVuSansMono Nerd Font Mono"
+
 TYPE="$1"
 if [ -z "$TYPE" ]; then
     TYPE="debug"
@@ -13,7 +15,7 @@ if gradle installRtexplore${TYPE^}Executable --console=rich; then
     printf "\nRunning %s executable...\n" $TYPE
     sleep 0.5
 
-    TICKIT_DEBUG_FD=3 TICKIT_DEBUG_FLAGS=U xterm -T "i3-float" -geometry 100x50+200+150 -fa "AnonymousProMinus" -fs 8 -e ./build/install/rtexplore/$TYPE/rtexplore 3>&2
+    TICKIT_DEBUG_FD=3 TICKIT_DEBUG_FLAGS=U xterm -T "i3-float" -geometry 100x50+200+150 -fa "$FONT" -fs 12 -e ./build/install/rtexplore/$TYPE/rtexplore 3>&2
 
     #LOG=$(cat error.log)
 
