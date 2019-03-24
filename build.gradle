@@ -128,8 +128,9 @@ model {
     }
     binaries {
         all {
-            // assumes libtermkey is installed (internal dependency of libtickit)
-            linker.args "-ltermkey"
+            // assumes libtermkey and its dependency unibilium are installed
+            // (internal dependency of libtickit)
+            linker.args "-ltermkey", "-lunibilium"
             if(project.hasProperty('SAMPLES'))
                 cppCompiler.define "SAMPLES", "${project.getProperty('SAMPLES')}"
             if(project.hasProperty('RES_MULT'))
@@ -339,7 +340,7 @@ task buildCuda(type: Exec) {
 task buildLibtickit(type: Exec) {
     dependsOn 'pullDeps'
     shouldRunAfter 'pullDeps'
-    commandLine "make", "-C", "${libtickit_location}", "clean", "all"
+    commandLine "make", "-C", "${libtickit_location}", "CFLAGS=-fPIC", "clean", "all"
 }
 
 task pullTinyObjLoader(type: Download) {
