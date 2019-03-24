@@ -91,24 +91,34 @@ static int tick(Tickit *root, TickitEventFlags flags, void *info, void *user) {
     tlv->frame++;
 
     // enqueue next frame
-    tickit_watch_later(tlv->tm->root, TICKIT_BIND_UNBIND, &tick, tlv);
+    // tickit_watch_later(tlv->tm->root, TickitBindFlags(0), &tick, tlv);
 
     return true;
 }
 
 int main(int argc, char *argv[]) {
     tickit_debug_init();
+    Terminal *tm;
+    try {
+        // initalize libtickit
+        tm       = new Terminal();
+        auto tlv = new tick_loop_vars();
+        tlv->tm  = tm;
 
-    // initalize libtickit
-    auto tm  = new Terminal();
-    auto tlv = new tick_loop_vars();
-    tlv->tm  = tm;
+        tickit_term_bind_event(tm->term, TICKIT_TERM_ON_KEY, TickitBindFlags(0), on_key, tlv);
+        tickit_term_bind_event(tm->term, TICKIT_TERM_ON_MOUSE, TickitBindFlags(0), on_mouse, tlv);
+        tickit_watch_later(tm->root, TickitBindFlags(0), &tick, tlv);
 
-    tickit_term_bind_event(tm->term, TICKIT_TERM_ON_KEY, TICKIT_BIND_UNBIND, on_key, tlv);
-    tickit_term_bind_event(tm->term, TICKIT_TERM_ON_MOUSE, TICKIT_BIND_UNBIND, on_mouse, tlv);
-    tickit_watch_later(tm->root, TICKIT_BIND_UNBIND, &tick, tlv);
-
-    // start program
-    tickit_run(tm->root);
+        // start program
+        tickit_run(tm->root);
+    } catch (const std::exception &ex) {
+        tickit_debug_logf("Ue", "Fatal error: %s\n", ex.what());
+        delete tm;
+        throw std::runtime_error(ex.what());
+    }
     delete tm;
+
+    std::cout << "PAUSED -- press key to exit";
+    getchar();
+    return 0;
 }
