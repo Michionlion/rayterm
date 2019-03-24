@@ -5,12 +5,12 @@
 #include <cstring>
 #include "tickit.h"
 
-#define COLOR_ERROR 1
 #define RECT(t, l, li, co) \
     (TickitRect) { .top = (t), .left = (l), .lines = (li), .cols = (co) }
 
 static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
-static int resize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
+static int winresize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
+static int termresize(TickitTerm* win, TickitEventFlags flags, void* _info, void* data);
 
 inline TickitPenRGB8 make_color(uint8_t r, uint8_t g, uint8_t b) {
     return (TickitPenRGB8){.r = r, .g = g, .b = b};
@@ -117,7 +117,7 @@ static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* 
     // tickit_pen_clear_attr(pen, TICKIT_PEN_BG);
 
     tickit_renderbuffer_goto(rb, 0, 0);
-    tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, COLOR_ERROR);
+    tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, 1);
     tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_FG, make_color(255, 255, 255));
     tickit_renderbuffer_setpen(rb, pen);
     tickit_renderbuffer_text(rb, tm->info.c_str());
@@ -125,7 +125,7 @@ static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* 
 
     tickit_renderbuffer_flush_to_term(rb, tm->term);
 
-    tickit_debug_logf("Ue", "Rendered '%s'", tm->info.c_str());
+    tickit_debug_logf("Uri", "INFO: %s", tm->info.c_str());
 
     return 1;
 }
