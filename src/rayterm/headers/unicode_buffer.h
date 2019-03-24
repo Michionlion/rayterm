@@ -43,11 +43,15 @@ class UnicodeBuffer {
 
     UnicodeBuffer(unicode_cell* data, unsigned int width, unsigned int height)
         : data(data), width(width), height(height) {}
+    UnicodeBuffer(unsigned int width, unsigned int height)
+        : data(static_cast<unicode_cell*>(malloc(width * height * sizeof(unicode_cell)))),
+          width(width),
+          height(height) {}
 
     ~UnicodeBuffer() { free(data); }
 
     const unicode_cell& get(int x, int y) const { return data[y * width + x]; }
-    // void set(int x, int y, unicode_cell& cell) { data[y * width + x] = cell; }
+    void set(int x, int y, unicode_cell& cell) { data[y * width + x] = cell; }
 };
 
 #endif
