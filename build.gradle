@@ -333,7 +333,7 @@ task buildCuda(type: Exec) {
 task buildLibtickit(type: Exec) {
     dependsOn 'pullDeps'
     shouldRunAfter 'pullDeps'
-    commandLine "make", "-C", "${libtickit_location}", "all"
+    commandLine "make", "-C", "${libtickit_location}", "clean", "all"
 }
 
 task pullTinyObjLoader(type: Download) {
