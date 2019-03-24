@@ -11,6 +11,8 @@ int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb
         return 1;
     }
 
+    buffer->map();
+
     outfile << "P6 ";
     outfile << buffer->width << " " << buffer->height << " " << 255 << "\n";
     int pixels = buffer->width * buffer->height;
@@ -31,6 +33,5 @@ int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb
         }
     }
     outfile.close();
-    delete buffer;
     return 0;
 }

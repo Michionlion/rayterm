@@ -9,30 +9,60 @@
 #include "programs.h"
 #include "resources.h"
 
-// When using a PixelBuffer, you MUST call `delete buffer;` after you've finished.
-// This will unmap the memory, which is required before another launch.
+// When using a PixelBuffer, you MUST call `delete buffer;` or unmap()
+// after you've finished. This will unmap the memory, which is required
+// before another launch.
 class PixelBuffer {
     optix::Buffer backing_buffer;
 
    public:
     optix::uchar4* data;
     RTsize width, height;
+    bool mapped;
 
     explicit PixelBuffer(optix::Buffer buffer) {
         backing_buffer = buffer;
         buffer->getSize(width, height);
-        data = static_cast<optix::uchar4*>(backing_buffer->map(0, RT_BUFFER_MAP_READ));
     }
 
-    ~PixelBuffer() {
-        try {
-            backing_buffer->unmap();
-        } catch (const optix::Exception& ex) {
-            printf("~PixelBuffer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
+    ~PixelBuffer() { unmap(); }
+
+    const optix::uchar4& get(unsigned int x, unsigned int y) const {
+        if (mapped) {
+            return data[y * width + x];
+        } else {
+            throw std::runtime_error("Unmapped PixelBuffer");
         }
     }
 
-    const optix::uchar4& get(int x, int y) const { return data[y * width + x]; }
+    void unmap() {
+        if (!mapped) {
+            return;
+        }
+        try {
+            mapped = false;
+            backing_buffer->unmap();
+            this->data = nullptr;
+        } catch (const optix::Exception& ex) {
+            printf("PixelBuffer unmap error: %d (%s)\n", ex.getErrorCode(),
+                ex.getErrorString().c_str());
+        }
+    }
+
+    PixelBuffer* map() {
+        if (!mapped) {
+            try {
+                this->data =
+                    static_cast<optix::uchar4*>(backing_buffer->map(0, RT_BUFFER_MAP_READ));
+                mapped = true;
+            } catch (const optix::Exception& ex) {
+                printf("PixelBuffer map error: %d (%s)\n", ex.getErrorCode(),
+                    ex.getErrorString().c_str());
+                return nullptr;
+            }
+        }
+        return this;
+    }
 };
 
 class Renderer {
