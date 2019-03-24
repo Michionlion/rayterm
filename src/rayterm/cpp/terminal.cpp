@@ -3,7 +3,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include "raytrace"
 #include "tickit.h"
+#include "unicode_buffer.h"
+#include "unicode_translator.h"
 
 #define RECT(t, l, li, co) \
     (TickitRect) { .top = (t), .left = (l), .lines = (li), .cols = (co) }
@@ -91,26 +94,26 @@ static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* 
     auto tm                = static_cast<Terminal*>(data);
     auto info              = static_cast<TickitExposeEventInfo*>(_info);
     TickitRenderBuffer* rb = info->rb;
-
-    // int cols       = tickit_window_cols(win);
-    TickitPen* pen = tickit_pen_new();
+    TickitPen* pen         = tickit_pen_new();
 
     tickit_renderbuffer_eraserect(rb, &info->rect);
 
-    // tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, COLOR_ERROR);
-    // tickit_renderbuffer_setpen(rb, pen);
-    // tickit_renderbuffer_text_at(rb, 1, 0, "Color:");
-    //
-    // tickit_renderbuffer_goto(rb, 2, 0);
-    // for (int x = 0; x < cols; x++) {
-    //     tickit_pen_set_colour_attr(pen, TICKIT_PEN_BG, x > cols / 2 ? COLOR_ERROR : 0);
-    //     tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_BG, make_color(255 * x / (cols - 1), 0,
-    //     0));
-    //
-    //     tickit_renderbuffer_setpen(rb, pen);
-    //     tickit_renderbuffer_text(rb, " ");
-    // }
-    // tickit_pen_clear_attr(pen, TICKIT_PEN_BG);
+    tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, 1);
+    tickit_pen_set_colour_attr(pen, TICKIT_PEN_BG, 1);
+
+    for (unsigned int row = tm->height; row < tm->height; row++) {
+        for (unsigned int col = 0; col < tm->width; col++) {
+            const unicode_cell cell = tm->buffer->get(col, row);
+            tickit_pen_set_colour_attr_rgb8(
+                pen, TICKIT_PEN_FG, make_color(cell.fg_r, cell.fg_b, cell.fg_b));
+            tickit_pen_set_colour_attr_rgb8(
+                pen, TICKIT_PEN_BG, make_color(cell.bg_r, cell.bg_b, cell.bg_b));
+            tickit_renderbuffer_setpen(rb, pen);
+            tickit_renderbuffer_char_at(rb, row, col, cell.character);
+        }
+    }
+    tickit_pen_clear_attr(pen, TICKIT_PEN_FG);
+    tickit_pen_clear_attr(pen, TICKIT_PEN_BG);
 
     tickit_renderbuffer_goto(rb, 0, 0);
     tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, 1);
