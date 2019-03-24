@@ -21,23 +21,32 @@ incomplete CPU implementation, available [here](https://github.com/Michionlion/r
   (Installed to `lib/mdl`)
 * [GoogleTest](https://github.com/google/googletest)
   (Installed to `lib/googletest`)
+* [Tickit](https://github.com/Michionlion/libtickit)
+  (Installed to `lib/libtickit`)
 
 These libraries are all installed automatically by running `gradle deps`,
 although installation may take some time as many of them are large. This
 automated installation requires [git lfs](https://git-lfs.github.com/), and
 will fail without it. See `gradle.properties` to change the default expected
-installation locations, if you wish to use system packages.
+installation locations, if you wish to use external packages.
 
 The `gcc` toolchain is used to compile `RayTerm`. We specifically require
-`g++-7`, and by default search `/usr/bin/` for it. `nvcc` also requires `gcc-7`,
-and a link to it must be placed in `lib/cuda/bin`. This is taken care of
+`g++-7`, and by default search `/usr/bin/` for it. This is taken care of
 automatically when `gradle compileCu` is run, but may need to be manually
 changed if the `gcc` installation changes.
 
+When running built objects, the `rayterm` library must be loadable, as well as
+`optix`, `cudart`, `libtickit`, and its internal dependencies
+[`libtermkey`](http://www.leonerd.org.uk/code/libtermkey/) and
+[`libunibilium`](https://github.com/mauke/unibilium) (which are not
+automatically installed). The `rayterm` library can be installed with
+`gradle install`, and its location can be modified in `gradle.properties`. If
+`libtickit` is statically linked, then it can be left out of the above list.
+
 Linting dependencies such as [mdl](https://github.com/markdownlint/markdownlint),
-[proselint](https://github.com/amperser/proselint/), and [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)
-ensure documentation and code are well written; they should be installed before
-running `gradle lint`.
+[proselint](https://github.com/amperser/proselint/), and
+[clang-tidy](https://clang.llvm.org/extra/clang-tidy/) ensure documentation and
+code are well written; they should be installed before running `gradle lint`.
 
 #### Testing
 
