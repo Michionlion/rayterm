@@ -84,7 +84,8 @@ class Renderer {
     Programs* programs;
     Resources* resources;
 
-    Renderer(int width, int height, int samples) : width(width), height(height), samples(samples) {
+    Renderer(unsigned int width, unsigned int height, int samples)
+        : width(width), height(height), samples(samples) {
         std::string place = "initContext";
         try {
             initContext();
@@ -97,7 +98,7 @@ class Renderer {
         } catch (const optix::Exception& ex) {
             printf("Renderer Error in %s: %d (%s)\n", place.c_str(), ex.getErrorCode(),
                 ex.getErrorString().c_str());
-            throw std::runtime_error("Renderer Error");
+            throw std::runtime_error("Renderer Error: " + ex.getErrorString());
         }
     }
     ~Renderer() {
@@ -114,7 +115,7 @@ class Renderer {
 
     optix::Context getContext() { return context; }
 
-    void resize(int width, int height);
+    void resize(unsigned int width, unsigned int height);
 
     PixelBuffer* buffer() { return new PixelBuffer(raw_buffer); }
 
@@ -122,15 +123,17 @@ class Renderer {
     void launch();
 };
 
-// For rtDevice*() function error checking. No OptiX context present at that time.
-#define RT_CHECK_ERROR(func)                                                               \
-    do {                                                                                   \
-        RTresult code = func;                                                              \
-        if (code != RT_SUCCESS) {                                                          \
-            const char* msg;                                                               \
-            rtContextGetErrorString(nullptr, code, &msg);                                  \
-            std::cerr << "ERROR " << msg << " (" << code << ") in " << #func << std::endl; \
-        }                                                                                  \
+// For rtDevice*() function error checking
+// No OptiX context present at that time
+#define RT_CHECK_ERROR(func)                               \
+    do {                                                   \
+        RTresult code = func;                              \
+        if (code != RT_SUCCESS) {                          \
+            const char* msg;                               \
+            rtContextGetErrorString(nullptr, code, &msg);  \
+            std::cerr << "ERROR " << msg << " (";          \
+            std::cerr << code << ") in " << #func << "\n"; \
+        }                                                  \
     } while (0)
 
 static void printDeviceInfo() {
