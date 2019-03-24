@@ -16,7 +16,7 @@ class Programs {
     ~Programs() {
         try {
             for (auto it : program_map) {
-                it.second->destroy();
+                it.second->removeReference();
             }
         } catch (const optix::Exception& ex) {
             printf("~Programs Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());

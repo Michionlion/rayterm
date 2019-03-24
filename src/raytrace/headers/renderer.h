@@ -22,11 +22,15 @@ class PixelBuffer {
 
     explicit PixelBuffer(optix::Buffer buffer) {
         backing_buffer = buffer;
-        buffer->getSize(width, height);
+        backing_buffer->addReference();
+        backing_buffer->getSize(width, height);
         mapped = false;
     }
 
-    ~PixelBuffer() { unmap(); }
+    ~PixelBuffer() {
+        unmap();
+        backing_buffer->removeReference();
+    }
 
     const optix::uchar4& get(unsigned int x, unsigned int y) const {
         if (mapped) {
@@ -103,12 +107,12 @@ class Renderer {
         }
     }
     ~Renderer() {
-        // destroy context
         try {
             delete camera;
             delete programs;
             delete resources;
-            context->destroy();
+            context->removeReference();
+            raw_buffer->removeReference();
         } catch (const optix::Exception& ex) {
             printf("~Renderer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
         }
