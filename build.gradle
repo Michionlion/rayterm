@@ -105,7 +105,7 @@ model {
             sources.cpp.lib library: 'optix', linkage: optix_link_type
             sources.cpp.lib library: 'tinyobjloader', linkage: 'api'
             sources.cpp.lib library: 'raytrace', linkage: 'static'
-            sources.cpp.lib library: "rayterm", linkage: 'static'
+            sources.cpp.lib library: "rayterm", linkage: 'shared'
         }
     }
     testSuites {
@@ -365,7 +365,7 @@ task deps {
 task install(type: Copy) {
     dependsOn 'build'
     from 'build/lib/rayterm/shared/release'
-    into "${System.getProperty("user.home")}/${install_location}"
+    into install_location
 }
 
 task test {
