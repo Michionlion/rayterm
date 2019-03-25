@@ -10,6 +10,7 @@ addons:
     packages:
       - g++-7
       - libtool-bin
+      - libunibilium-dev
 
 # install dependencies
 install:
