@@ -17,6 +17,12 @@ int main(int argc, char* argv[]) {
         int samples    = std::stoi(argv[3]);
         int width      = int(80 * res_mult);
         int height     = int(52 * res_mult);
+
+        if (n < 1) {
+            fprintf(stderr, "n must be greater than 0\n");
+            exit(1);
+        }
+
         printDeviceInfo();
         printf("Rendering %dx%d, %dspp images\n", width, height, samples);
 
@@ -28,17 +34,20 @@ int main(int argc, char* argv[]) {
             // delete renderer;
             // renderer = new Renderer(width, height, samples);
 
-            if (i > 0)
+            if (i > 0) {
                 printf("Start run %d\n", i);
+            }
             begin = std::chrono::steady_clock::now();
             renderer->launch();
             end = std::chrono::steady_clock::now();
-            if (i > 0)
+            if (i > 0) {
                 printf("End run %d, ", i);
+            }
 
             times[i] = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
-            if (i > 0)
+            if (i > 0) {
                 printf("time: %ldms\n", times[i]);
+            }
         }
 
         int64_t average_time = 0;
