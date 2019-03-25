@@ -3,29 +3,21 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
 #include "raytrace"
 #include "tickit.h"
 #include "unicode_buffer.h"
 #include "unicode_translator.h"
 
-#define RECT(t, l, li, co) \
-    (TickitRect) { .top = (t), .left = (l), .lines = (li), .cols = (co) }
+// U+2580 (▀)
+#define UPPER_HALF_PIXEL_CHAR 0x2580L
 
 static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
 static int winresize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
 static int termresize(TickitTerm* win, TickitEventFlags flags, void* _info, void* data);
 
-inline TickitPenRGB8 make_color(uint8_t r, uint8_t g, uint8_t b) {
-    return (TickitPenRGB8){.r = r, .g = g, .b = b};
-}
-
 Terminal::Terminal() {
     // create Renderer
-
-    renderer    = new Renderer(width, height * 2, 32);
-    buffer      = new UnicodeBuffer(width, height);
-    pixelbuffer = renderer->buffer();
-    pixelbuffer->unmap();
 
     // create tickit
 
@@ -35,14 +27,14 @@ Terminal::Terminal() {
         tickit_unref(root);
         throw std::runtime_error("Failed to initialize Tickit!");
     }
+    tickit_setctl_int(root, TICKIT_CTL_USE_ALTSCREEN, true);
+
     term = tickit_get_term(root);
     if (!term) {
         fprintf(stderr, "Cannot create TickitTerm- %s\n", strerror(errno));
         tickit_unref(root);
         throw std::runtime_error("Failed to get TickitTerm!");
     }
-
-    tickit_setctl_int(root, TICKIT_CTL_USE_ALTSCREEN, true);
     tickit_term_setctl_int(term, TICKIT_TERMCTL_CURSORVIS, false);
     tickit_term_setctl_int(term, TICKIT_TERMCTL_KEYPAD_APP, true);
     tickit_term_setctl_int(term, TICKIT_TERMCTL_MOUSE, TICKIT_TERM_MOUSEMODE_OFF);
@@ -63,6 +55,11 @@ Terminal::Terminal() {
     tickit_window_bind_event(
         main, TICKIT_WINDOW_ON_GEOMCHANGE, TickitBindFlags(0), &winresize, this);
     tickit_window_bind_event(main, TICKIT_WINDOW_ON_EXPOSE, TickitBindFlags(0), &render, this);
+
+    renderer    = new Renderer(width, height * 2, 64);
+    buffer      = new UnicodeBuffer(width, height);
+    pixelbuffer = renderer->buffer();
+    pixelbuffer->unmap();
 }
 
 // Close down Terminal
@@ -79,9 +76,13 @@ Terminal::~Terminal() {
 
 void Terminal::renderFrame() {
     // issue raytrace
+    tickit_debug_logf("Ur", "launch");
     renderer->launch();
-
-    buffer = translate_halfpixel(pixelbuffer, buffer);
+    tickit_debug_logf("Ur", "translate");
+    pixelbuffer = renderer->buffer()->map();
+    buffer      = translate_halfpixel(pixelbuffer, buffer);
+    delete pixelbuffer;
+    tickit_debug_logf("Ur", "expose");
 
     // expose
     tickit_window_expose(this->main, nullptr);
@@ -108,18 +109,17 @@ static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* 
 
     tickit_renderbuffer_eraserect(rb, &info->rect);
 
-    tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, 1);
-    tickit_pen_set_colour_attr(pen, TICKIT_PEN_BG, 1);
-
-    for (unsigned int row = tm->height; row < tm->height; row++) {
+    for (unsigned int row = 0; row < tm->height; row++) {
         for (unsigned int col = 0; col < tm->width; col++) {
             const unicode_cell cell = tm->buffer->get(col, row);
-            tickit_pen_set_colour_attr_rgb8(
-                pen, TICKIT_PEN_FG, make_color(cell.fg_r, cell.fg_b, cell.fg_b));
-            tickit_pen_set_colour_attr_rgb8(
-                pen, TICKIT_PEN_BG, make_color(cell.bg_r, cell.bg_b, cell.bg_b));
+            tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, 1);
+            tickit_pen_set_colour_attr(pen, TICKIT_PEN_BG, 2);
+            tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_FG,
+                (TickitPenRGB8){.r = cell.fg_r, .g = cell.fg_g, .b = cell.fg_b});
+            tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_BG,
+                (TickitPenRGB8){.r = cell.bg_r, .g = cell.bg_g, .b = cell.bg_b});
             tickit_renderbuffer_setpen(rb, pen);
-            tickit_renderbuffer_char_at(rb, row, col, cell.character);
+            tickit_renderbuffer_char_at(rb, row, col, UPPER_HALF_PIXEL_CHAR);
         }
     }
     tickit_pen_clear_attr(pen, TICKIT_PEN_FG);
@@ -127,7 +127,8 @@ static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* 
 
     tickit_renderbuffer_goto(rb, 0, 0);
     tickit_pen_set_colour_attr(pen, TICKIT_PEN_FG, 1);
-    tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_FG, make_color(255, 255, 255));
+    tickit_pen_set_colour_attr_rgb8(
+        pen, TICKIT_PEN_FG, (TickitPenRGB8){.r = 255, .g = 255, .b = 255});
     tickit_renderbuffer_setpen(rb, pen);
     tickit_renderbuffer_text(rb, tm->info.c_str());
     tickit_pen_clear_attr(pen, TICKIT_PEN_FG);
