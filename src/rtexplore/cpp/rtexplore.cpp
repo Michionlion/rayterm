@@ -1,9 +1,12 @@
 #include <unistd.h>
 #include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include "rayterm"
 #include "tickit.h"
+
+#define streq(a, b) (strcmp(a, b) == 0)
 
 struct tick_loop_vars {
     Terminal *tm;
@@ -31,9 +34,29 @@ static int on_key(TickitTerm *term, TickitEventFlags flags, void *_info, void *u
 
     tickit_debug_logf("Uik", "Key Event: %s", tlv->last_key.c_str());
 
-    if (info->str[0] == 'q') {
+    if (streq(info->str, "Escape")) {
         tickit_debug_logf("Ui", "Got EXIT!");
-        tickit_stop(tlv->tm->root);
+        tlv->complete = true;
+    } else if (streq(info->str, "w")) {
+        tlv->tm->renderer->camera->move(-0.1, 0, 0);
+    } else if (streq(info->str, "s")) {
+        tlv->tm->renderer->camera->move(0.1, 0, 0);
+    } else if (streq(info->str, "a")) {
+        tlv->tm->renderer->camera->move(0, 0, -0.1);
+    } else if (streq(info->str, "d")) {
+        tlv->tm->renderer->camera->move(0, 0, 0.1);
+    } else if (streq(info->str, "q")) {
+        tlv->tm->renderer->camera->move(0, -0.1, 0);
+    } else if (streq(info->str, "e")) {
+        tlv->tm->renderer->camera->move(0, 0.1, 0);
+    } else if (streq(info->str, "Up")) {
+        tlv->tm->renderer->camera->look(0, -0.02);
+    } else if (streq(info->str, "Down")) {
+        tlv->tm->renderer->camera->look(0, 0.02);
+    } else if (streq(info->str, "Left")) {
+        tlv->tm->renderer->camera->look(-0.01, 0);
+    } else if (streq(info->str, "Right")) {
+        tlv->tm->renderer->camera->look(0.01, 0);
     }
 
     return true;
@@ -98,7 +121,7 @@ int main(int argc, char *argv[]) {
             info_str << "Key: " << tlv->last_key << "  Mouse: " << tlv->last_mouse;
             tlv->tm->set_info_string(info_str.str());
             tlv->tm->renderFrame();
-            // usleep(33333);
+            usleep(16667);
             // usleep(6060);
             tlv->frame++;
         }
@@ -111,7 +134,7 @@ int main(int argc, char *argv[]) {
     }
     delete tm;
 
-    std::cout << "PAUSED -- press key to exit";
-    getchar();
+    // std::cout << "FINISHED -- press key to exit";
+    // getchar();
     return 0;
 }
