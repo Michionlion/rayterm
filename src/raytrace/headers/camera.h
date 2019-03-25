@@ -37,9 +37,15 @@ class Camera {
     ~Camera() = default;
 
     void setViewport(int w, int h);
+
     void setPosition(optix::float3 position);
     void setPosition(float x, float y, float z) { setPosition(optix::make_float3(x, y, z)); }
+
+    void move(optix::float3 delta) { setPosition(cameraPosition + delta); }
+    void move(float x, float y, float z) { move(optix::make_float3(x, y, z)); }
+
     void setLook(float p, float t);
+    void look(float dp, float dt) { setLook(phi + dp, theta + dt); }
 
     float getAspectRatio() const { return aspect_ratio; }
 
