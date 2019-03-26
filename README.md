@@ -9,8 +9,6 @@ incomplete CPU implementation, available [here](https://github.com/Michionlion/r
 
 ### Demonstration
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/a-Q6e52-hTA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
 ### Development
 
 #### Dependencies
