@@ -69,9 +69,9 @@ Terminal::~Terminal() {
     // also unrefs term and root
     tickit_unref(root);
 
-    delete renderer;
     delete buffer;
     delete pixelbuffer;
+    delete renderer;
 }
 
 void Terminal::renderFrame() {

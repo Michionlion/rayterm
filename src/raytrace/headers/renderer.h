@@ -109,10 +109,12 @@ class Renderer {
     ~Renderer() {
         try {
             delete camera;
-            delete programs;
             delete resources;
+            delete programs;
             raw_buffer->removeReference();
-            context->destroy();
+            // this causes memory issues
+            // context->destroy();
+            context->removeReference();
         } catch (const optix::Exception& ex) {
             printf("~Renderer Error: %d (%s)\n", ex.getErrorCode(), ex.getErrorString().c_str());
         }

@@ -127,12 +127,15 @@ int main(int argc, char *argv[]) {
         }
 
         tickit_stop(tlv->tm->root);
+        delete tm;
+        tm = nullptr;
     } catch (const std::exception &ex) {
         tickit_debug_logf("Ue", "Fatal error: %s\n", ex.what());
-        delete tm;
+        if (tm != nullptr) {
+            delete tm;
+        }
         throw std::runtime_error(ex.what());
     }
-    delete tm;
 
     // std::cout << "FINISHED -- press key to exit";
     // getchar();
