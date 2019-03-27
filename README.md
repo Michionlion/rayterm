@@ -4,6 +4,8 @@
 
 [![Build Status](https://travis-ci.com/Michionlion/rayterm.svg?branch=master)](https://travis-ci.com/Michionlion/rayterm)
 
+### Overview
+
 This repository is the GPU implementation of `RayTerm`. There is also an
 incomplete CPU implementation, available [here](https://github.com/Michionlion/rayterm-cpu).
 
@@ -61,5 +63,5 @@ testing. To build `RayTerm`, run the command `gradle build`. To run unit tests,
 run `gradle test`. To lint documentation and source code (where applicable),
 issue `gradle lint`. Custom scripts are also used to simplify and speed up the
 development process: `test.sh` compiles only what is needed for a `ppm` render
-test, and `run.sh` compiles the nessescary components for an `rtexplore`
+test, and `run.sh` compiles the necessary components for an `rtexplore`
 executable. Both are configurable with simple command-line arguments.
