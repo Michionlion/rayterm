@@ -13,4 +13,10 @@
 #define ASSET_FOLDER "assets"
 #endif
 
+// HANDLE_EXCEPTIONS is 1 or 0 -> 1 will turn on OptiX CUDA exceptions, 0 will
+// turn them off
+#ifndef HANDLE_EXCEPTIONS
+#define HANDLE_EXCEPTIONS 0
+#endif
+
 #endif

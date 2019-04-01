@@ -8,7 +8,6 @@
 #include "programs.h"
 #include "resources.h"
 
-#define HANDLE_EXCEPTIONS 1
 #define TRACE_DEPTH 7
 
 void Renderer::initContext() {
