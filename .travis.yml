@@ -32,8 +32,8 @@ cache:
 script:
   # clean
   - gradle clean --console=plain
-  # build cu files
-  - gradle compileCu --console=plain
+  # build cu files -- skip for now
+  #- gradle compileCu --console=plain
   # build cpp files
   - gradle assemble --console=plain
   # lint
