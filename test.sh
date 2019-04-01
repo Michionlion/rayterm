@@ -41,12 +41,12 @@ done
 
 COMPILED=1
 if [[ "$FLAGS" != "" ]]; then
-    gradle installRaytraceTestReleaseGoogleTestExe compileCu $FLAGS
+    gradle installRaytraceTestDebugGoogleTestExe compileCu $FLAGS
     COMPILED=$?
     echo "Compiled with $FLAGS"
     shift
 else
-    gradle installRaytraceTestReleaseGoogleTestExe compileCu
+    gradle installRaytraceTestDebugGoogleTestExe compileCu
     COMPILED=$?
     echo "Compiled with default samples"
 fi
@@ -56,11 +56,11 @@ if  [[ "$COMPILED" != "0" ]]; then
 fi
 
 if [[ "$TEST" = "true" ]]; then
-    LD_LOAD_LIBRARY=build/install/raytraceTest/release/lib gdb --exec=build/install/raytraceTest/release/lib/raytraceTest -ex "run" -ex "bt"
+    LD_LOAD_LIBRARY=build/install/raytraceTest/debug/lib gdb --exec=build/install/raytraceTest/debug/lib/raytraceTest -ex "run" -ex "bt"
     exit
 fi
 
-./build/install/raytraceTest/release/raytraceTest --gtest_filter=RaytracerTest.Screenshot
+./build/install/raytraceTest/debug/raytraceTest --gtest_filter=RaytracerTest.Screenshot
 
 if [[ "$OPEN" = "true" ]]; then
     exec feh --force-aliasing -Z test_image.ppm &
