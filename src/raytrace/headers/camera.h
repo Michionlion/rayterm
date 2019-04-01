@@ -7,8 +7,8 @@
 // #include <optixu/optixu_math_namespace.h>
 
 class Camera {
-    int width;
-    int height;
+    unsigned int width;
+    unsigned int height;
     float aspect_ratio;
     bool changed = false;
 
@@ -25,7 +25,7 @@ class Camera {
     optix::float3 cameraW;
 
    public:
-    Camera(float phi, float theta, float fov, int width, int height) : fov(fov) {
+    Camera(float phi, float theta, float fov, unsigned int width, unsigned int height) : fov(fov) {
         cameraPosition = optix::make_float3(0.0f, 0.0f, 0.0f);
         cameraU        = optix::make_float3(1.0f, 0.0f, 0.0f);
         cameraV        = optix::make_float3(0.0f, 1.0f, 0.0f);
@@ -36,7 +36,7 @@ class Camera {
     }
     ~Camera() = default;
 
-    void setViewport(int w, int h);
+    void setViewport(unsigned int w, unsigned int h);
 
     void setPosition(optix::float3 position);
     void setPosition(float x, float y, float z) { setPosition(optix::make_float3(x, y, z)); }

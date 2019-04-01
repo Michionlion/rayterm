@@ -3,7 +3,7 @@
 #include <optix_world.h>
 #include <cmath>
 
-void Camera::setViewport(int w, int h) {
+void Camera::setViewport(unsigned int w, unsigned int h) {
     if (width != w || height != h) {
         // never drop to zero viewport size
         width        = (w) ? w : 1;
