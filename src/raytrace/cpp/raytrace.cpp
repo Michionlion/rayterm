@@ -13,12 +13,15 @@ int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb
 
     buffer->map();
 
+    unsigned int width  = static_cast<unsigned int>(buffer->width);
+    unsigned int height = static_cast<unsigned int>(buffer->height);
+
     outfile << "P6 ";
-    outfile << buffer->width << " " << buffer->height << " " << 255 << "\n";
-    int pixels = buffer->width * buffer->height;
-    int pixel  = 0;
-    for (int y = 0; y < buffer->height; y++) {
-        for (int x = 0; x < buffer->width; x++) {
+    outfile << width << " " << height << " " << 255 << "\n";
+    unsigned int pixels = width * height;
+    unsigned int pixel  = 0;
+    for (unsigned int y = 0; y < height; y++) {
+        for (unsigned int x = 0; x < width; x++) {
             optix::uchar4 sample = buffer->get(x, y);
 
             // print red
