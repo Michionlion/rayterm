@@ -30,7 +30,7 @@ std::vector<std::string> split(std::string str, const char* token) {
 }
 
 int Resources::loadObjFile(std::string objfile) {
-    objfile = std::string(ASSET_FOLDER) + std::string("/") + objfile;
+    objfile = std::string(ASSET_DIRECTORY) + std::string("/") + objfile;
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
@@ -55,7 +55,7 @@ void throwMatError(
 }
 
 int Resources::loadMatFile(std::string matfile) {
-    matfile = std::string(ASSET_FOLDER) + std::string("/") + matfile;
+    matfile = std::string(ASSET_DIRECTORY) + std::string("/") + matfile;
 
     std::array<bool, 2> requirements = {false, false};
 

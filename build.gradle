@@ -138,7 +138,7 @@ model {
             if(project.hasProperty('NO_PROGRESS'))
                 cppCompiler.define "NO_PROGRESS"
 
-            cppCompiler.define "ASSET_FOLDER", "\"${asset_folder}\""
+            cppCompiler.define "ASSET_DIRECTORY", "\"${asset_folder}\""
 
             cppCompiler.args "-std=c++11", "-msse4", "-fPIC", "-Wall"
             setCuArgs(cppCompiler)
