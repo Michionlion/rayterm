@@ -19,6 +19,7 @@ TEST(GeometryTest, ObjLoad) {
     // assumes one shape
     int num_tris = mesh->shapes[0].mesh.num_face_vertices.size();
     EXPECT_EQ(num_tris, 15744) << "Loaded incorrect number of faces";
+    renderer->getContext()->destroy();
     delete renderer;
 }
 
@@ -32,6 +33,7 @@ TEST(GeometryTest, MatLoad) {
 
     int num_vars = mat->getVariableCount();
     EXPECT_EQ(num_vars, 1) << "Loaded incorrect number of variables";
+    renderer->getContext()->destroy();
     delete renderer;
 }
 
@@ -57,5 +59,6 @@ TEST(GeometryTest, GeometryInstance) {
     Mesh* mesh                    = resources.getMesh(mesh_id);
     EXPECT_EQ(tris->getPrimitiveCount(), mesh->shapes[0].mesh.num_face_vertices.size())
         << "Mesh and GeometryTriangles triangle count do not match";
+    renderer->getContext()->destroy();
     delete renderer;
 }

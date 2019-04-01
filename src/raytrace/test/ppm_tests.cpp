@@ -33,5 +33,6 @@ TEST(RaytracerTest, Screenshot) {
 
     printf("Written in %ldms\n",
         std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count());
+    renderer->getContext()->destroy();
     delete renderer;
 }

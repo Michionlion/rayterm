@@ -56,5 +56,6 @@ TEST(UnicodeBuffer, HalfPixelTranslation) {
 
     delete pixels;
     delete unicode;
+    renderer->getContext()->destroy();
     delete renderer;
 }
