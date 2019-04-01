@@ -145,8 +145,10 @@ model {
 
             if(buildType == buildTypes.debug) {
                 cppCompiler.args "-g"
+                cppCompiler.define "HANDLE_EXCEPTIONS", "1"
             } else if(buildType == buildTypes.release) {
                 cppCompiler.args "-O3", "-funroll-loops", "-march=native", "-mfpmath=sse"
+                cppCompiler.define "HANDLE_EXCEPTIONS", "0"
             }
         }
         withType(GoogleTestTestSuiteBinarySpec) {
