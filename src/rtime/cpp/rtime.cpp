@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
 
         auto renderer = new Renderer(width, height, samples);
         std::chrono::steady_clock::time_point begin, end;
-        int64_t times[n + 1];
+        int64_t times[n + 1];  // NOLINT
 
         for (int i = 0; i < n + 1; i++) {
             // delete renderer;

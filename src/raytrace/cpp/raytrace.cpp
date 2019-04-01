@@ -13,8 +13,8 @@ int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb
 
     buffer->map();
 
-    unsigned int width  = static_cast<unsigned int>(buffer->width);
-    unsigned int height = static_cast<unsigned int>(buffer->height);
+    auto width  = static_cast<unsigned int>(buffer->width);
+    auto height = static_cast<unsigned int>(buffer->height);
 
     outfile << "P6 ";
     outfile << width << " " << height << " " << 255 << "\n";

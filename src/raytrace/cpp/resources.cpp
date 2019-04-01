@@ -3,6 +3,7 @@
 #include "resources.h"
 #include <optix.h>
 #include <optix_world.h>
+#include <array>
 #include <exception>
 #include <fstream>
 #include <sstream>
@@ -56,7 +57,7 @@ void throwMatError(
 int Resources::loadMatFile(std::string matfile) {
     matfile = std::string(ASSET_FOLDER) + std::string("/") + matfile;
 
-    bool requirements[2] = {false, false};
+    std::array<bool, 2> requirements = {false, false};
 
     optix::Material material = context->createMaterial();
 

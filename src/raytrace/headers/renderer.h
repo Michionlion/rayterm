@@ -146,8 +146,8 @@ class Renderer {
 static void printDeviceInfo() {
     unsigned int device_count, i, multiprocessor_count, threads_per_block, clock_rate,
         texture_count, timeout_enabled, tcc_driver, cuda_device;
-    unsigned int compute_capability[2];
-    char device_name[128];
+    unsigned int compute_capability[2];  // NOLINT
+    char device_name[128];               // NOLINT
     RTsize memory_size;
 
     RTresult code = rtDeviceGetDeviceCount(&device_count);

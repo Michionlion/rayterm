@@ -7,9 +7,9 @@ UnicodeBuffer* translate_halfpixel(PixelBuffer* pixels) {
 }
 
 UnicodeBuffer* translate_halfpixel(PixelBuffer* pixels, UnicodeBuffer* unicode) {
-    int cell            = 0;
-    unsigned int height = static_cast<unsigned int>(pixels->height);
-    unsigned int width  = static_cast<unsigned int>(pixels->width);
+    int cell    = 0;
+    auto height = static_cast<unsigned int>(pixels->height);
+    auto width  = static_cast<unsigned int>(pixels->width);
     for (unsigned int y = 0; y < height; y += 2) {
         for (unsigned int x = 0; x < width; x++) {
             auto fg               = pixels->get(x, y);

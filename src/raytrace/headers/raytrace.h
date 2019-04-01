@@ -6,7 +6,7 @@
 #include "renderer.h"
 
 // parameters are (complete, total)
-using progress_callback = void (*)(int, int);
+using progress_callback = void (*)(unsigned int, unsigned int);
 
 int write_buffer(const char* filename, PixelBuffer* buffer, progress_callback cb = nullptr);
 

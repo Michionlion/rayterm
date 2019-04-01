@@ -66,7 +66,7 @@ class Resources {
     optix::Material getMaterial(int id) { return materials[id]; }
     int addMaterial(const optix::Material& mat) {
         materials.push_back(mat);
-        return materials.size() - 1;
+        return int(materials.size() - 1);
     }
 
     // load obj file and return mesh id

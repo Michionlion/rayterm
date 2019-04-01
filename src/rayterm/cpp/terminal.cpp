@@ -119,7 +119,7 @@ static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* 
             tickit_pen_set_colour_attr_rgb8(pen, TICKIT_PEN_BG,
                 (TickitPenRGB8){.r = cell.bg_r, .g = cell.bg_g, .b = cell.bg_b});
             tickit_renderbuffer_setpen(rb, pen);
-            tickit_renderbuffer_char_at(rb, row, col, UPPER_HALF_PIXEL_CHAR);
+            tickit_renderbuffer_char_at(rb, int(row), int(col), UPPER_HALF_PIXEL_CHAR);
         }
     }
     tickit_pen_clear_attr(pen, TICKIT_PEN_FG);
