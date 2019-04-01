@@ -56,7 +56,7 @@ if  [[ "$COMPILED" != "0" ]]; then
 fi
 
 if [[ "$TEST" = "true" ]]; then
-    LD_LOAD_LIBRARY=build/install/raytraceTest/debug/lib gdb --exec=build/install/raytraceTest/debug/lib/raytraceTest -ex "run" -ex "bt"
+    LD_LIBRARY_PATH=build/install/raytraceTest/debug/lib gdb --exec=build/install/raytraceTest/debug/lib/raytraceTest -ex "run" -ex "bt"
     exit
 fi
 
