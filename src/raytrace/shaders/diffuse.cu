@@ -26,14 +26,14 @@ rtDeclareVariable(optix::float3, varAttenuation, , );
 RT_PROGRAM void closest_hit() {
     thePayload.depth -= 1;
     if (thePayload.depth > 0) {
-        const optix::int3 v_idx = vidx[rtGetPrimitiveIndex()];
-        const optix::float3 v0  = vbuf[v_idx.x];
-        const optix::float3 v1  = vbuf[v_idx.y];
-        const optix::float3 v2  = vbuf[v_idx.z];
+        // const optix::int3 v_idx = vidx[rtGetPrimitiveIndex()];
+        // const optix::float3 v0  = vbuf[v_idx.x];
+        // const optix::float3 v1  = vbuf[v_idx.y];
+        // const optix::float3 v2  = vbuf[v_idx.z];
 
         // calculate geometric (face) normal
-        // const optix::float3 Ng        = optix::cross(v1 - v0, v2 - v0);
-        // const float3 normal = optix::normalize(Ng);
+        // const optix::float3 Ng = optix::cross(v1 - v0, v2 - v0);
+        // const float3 normal    = optix::normalize(Ng);
 
         // calculate interpolated vertex (shading) normal
         const optix::int3 n_idx = nidx[rtGetPrimitiveIndex()];
