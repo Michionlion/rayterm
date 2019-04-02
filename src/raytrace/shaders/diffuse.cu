@@ -43,7 +43,7 @@ RT_PROGRAM void closest_hit() {
 
         optix::float3 ref_dir = optix::normalize(random_in_uhemisphere(thePayload.rand, normal));
         optix::float3 hit_pos = theRay.origin + distance * theRay.direction;
-        optix::Ray bounce     = optix::make_Ray(hit_pos, ref_dir, 0, 0.001f, RT_DEFAULT_MAX);
+        optix::Ray bounce     = optix::make_Ray(hit_pos, ref_dir, 0, 0.00001f, RT_DEFAULT_MAX);
         rtTrace(sysRootObject, bounce, thePayload);
         thePayload.radiance = varAttenuation * thePayload.radiance;
     } else {
