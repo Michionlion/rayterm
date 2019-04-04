@@ -101,11 +101,32 @@ static int on_mouse(TickitTerm *term, TickitEventFlags flags, void *_info, void 
 }
 
 int main(int argc, char *argv[]) {
+    int samples = -1;
+
+    int arg = 1;
+    while (arg < argc) {
+        char *argval = argv[arg];
+        if (streq(argval, "--samples")) {
+            arg++;
+            if (arg >= argc) {
+                fprintf(stderr, "No number specified for --samples");
+                exit(1);
+            }
+            samples = std::stoi(argv[arg]);
+            continue;
+        }
+        arg++;
+    }
+
+    if (samples < 0) {
+        samples = 64;
+    }
+
     tickit_debug_init();
     Terminal *tm;
     try {
         // initalize libtickit
-        tm            = new Terminal();
+        tm            = new Terminal(samples);
         auto tlv      = new tick_loop_vars();
         tlv->tm       = tm;
         tlv->complete = false;
