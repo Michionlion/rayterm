@@ -25,7 +25,7 @@ if gradle compileCu installRtexplore${TYPE^}Executable --console=rich; then
 if [[ -z "$NO_TERM" ]]; then
     LD_LIBRARY_PATH=build/install/rtexplore/$TYPE/lib COLORTERM=truecolor TICKIT_DEBUG_FD=4 TICKIT_DEBUG_FLAGS=U xterm -T "i3-float" -geometry 80x26+300+250 -fa "$FONT" -fs 9 -e ./build/install/rtexplore/$TYPE/rtexplore 4>&2
 else
-    LD_LIBRARY_PATH=build/install/rtexplore/$TYPE/lib COLORTERM=truecolor ./build/install/rtexplore/$TYPE/rtexplore 2> >(tee -a $LOG >&2)
+    LD_LIBRARY_PATH=build/install/rtexplore/$TYPE/lib COLORTERM=truecolor TICKIT_DEBUG_FG=4 TICKIT_DEBUG_FLAGS=U ./build/install/rtexplore/$TYPE/rtexplore 4> $LOG
 fi
     LOG_CONTENTS=$(cat $LOG)
 
