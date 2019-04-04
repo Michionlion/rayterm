@@ -3,7 +3,6 @@
 
 
 # parse flags
-OUTPUT=false
 FLAGS=""
 while [ $# -gt 0 ]; do
     case $1 in
@@ -34,13 +33,14 @@ while [ $# -gt 0 ]; do
             TEST=true
         ;;
         *)
-            echo -e "\033[2;91mUnrecognized flag '$1!'\033[0m"
+            echo -e "\033[91mUnrecognized flag '$1!'\033[0m"
     esac
 shift
 done
 
 COMPILED=1
 if [[ "$FLAGS" != "" ]]; then
+    # shellcheck disable=SC2086
     gradle installRaytraceTestDebugGoogleTestExe compileCu $FLAGS
     COMPILED=$?
     echo "Compiled with $FLAGS"
