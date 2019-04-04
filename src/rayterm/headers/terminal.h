@@ -26,11 +26,12 @@ class Terminal {
 
     std::string info;
     unsigned int width, height;
+    int samples;
 
     Renderer* renderer;
     UnicodeBuffer* buffer;
 
-    Terminal();
+    Terminal(int samples);
     ~Terminal();
 
     void renderFrame();

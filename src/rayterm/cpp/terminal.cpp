@@ -16,7 +16,7 @@ static int render(TickitWindow* win, TickitEventFlags flags, void* _info, void* 
 static int winresize(TickitWindow* win, TickitEventFlags flags, void* _info, void* data);
 static int termresize(TickitTerm* win, TickitEventFlags flags, void* _info, void* data);
 
-Terminal::Terminal() {
+Terminal::Terminal(int samples) : samples(samples) {
     // create Renderer
 
     // create tickit
@@ -36,7 +36,7 @@ Terminal::Terminal() {
         throw std::runtime_error("Failed to get TickitTerm!");
     }
     tickit_term_setctl_int(term, TICKIT_TERMCTL_CURSORVIS, false);
-    tickit_term_setctl_int(term, TICKIT_TERMCTL_KEYPAD_APP, true);
+    tickit_term_setctl_int(term, TICKIT_TERMCTL_KEYPAD_APP, false);
     tickit_term_setctl_int(term, TICKIT_TERMCTL_MOUSE, TICKIT_TERM_MOUSEMODE_OFF);
 
     main = tickit_get_rootwin(root);
@@ -56,7 +56,7 @@ Terminal::Terminal() {
         main, TICKIT_WINDOW_ON_GEOMCHANGE, TickitBindFlags(0), &winresize, this);
     tickit_window_bind_event(main, TICKIT_WINDOW_ON_EXPOSE, TickitBindFlags(0), &render, this);
 
-    renderer    = new Renderer(width, height * 2, 64);
+    renderer    = new Renderer(width, height * 2, samples);
     buffer      = new UnicodeBuffer(width, height);
     pixelbuffer = renderer->buffer();
     pixelbuffer->unmap();
@@ -76,13 +76,10 @@ Terminal::~Terminal() {
 
 void Terminal::renderFrame() {
     // issue raytrace
-    tickit_debug_logf("Ur", "launch");
     renderer->launch();
-    tickit_debug_logf("Ur", "translate");
     pixelbuffer = renderer->buffer()->map();
     buffer      = translate_halfpixel(pixelbuffer, buffer);
     delete pixelbuffer;
-    tickit_debug_logf("Ur", "expose");
 
     // expose
     tickit_window_expose(this->main, nullptr);
@@ -92,8 +89,10 @@ void Terminal::resize(unsigned int width, unsigned int height) {
     this->width  = width;
     this->height = height;
     delete pixelbuffer;
+    delete buffer;
     renderer->resize(width, height * 2);
     pixelbuffer = renderer->buffer();
+    buffer      = new UnicodeBuffer(width, height);
 }
 
 void Terminal::set_info_string(std::string info) {
