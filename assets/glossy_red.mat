@@ -1,0 +1,4 @@
+closest:glossy,closest_hit,0
+any:glossy,any_hit,0
+var:float3,varAttenuation,0.65,0.125,0.2
+var:float,varRoughness,0.4
