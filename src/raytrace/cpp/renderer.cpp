@@ -106,15 +106,18 @@ void Renderer::initWorld() {
 
     // sample world (monkey.obj and diffuse.mat)
 
-    int monkeyObj = resources->loadObjFile("monkey.obj");
-    int coneObj   = resources->loadObjFile("cone.obj");
-    int planeObj  = resources->loadObjFile("plane.obj");
-    int sphereObj = resources->loadObjFile("sphere.obj");
-    int clayMat   = resources->loadMatFile("diffuse_clay.mat");
-    int greenMat  = resources->loadMatFile("diffuse_green.mat");
-    int blueMat   = resources->loadMatFile("diffuse_blue.mat");
+    int monkeyObj     = resources->loadObjFile("monkey.obj");
+    int coneObj       = resources->loadObjFile("cone.obj");
+    int planeObj      = resources->loadObjFile("plane.obj");
+    int sphereObj     = resources->loadObjFile("sphere.obj");
+    int clayMat       = resources->loadMatFile("diffuse_clay.mat");
+    int greenMat      = resources->loadMatFile("diffuse_green.mat");
+    int blueMat       = resources->loadMatFile("diffuse_blue.mat");
+    int mirrorMat     = resources->loadMatFile("mirror.mat");
+    int glossyRedMat  = resources->loadMatFile("glossy_red.mat");
+    int glossyGrayMat = resources->loadMatFile("glossy_gray.mat");
 
-    optix::GeometryGroup monkey1 = resources->createGeometryGroup(monkeyObj, clayMat,
+    optix::GeometryGroup monkey1 = resources->createGeometryGroup(monkeyObj, glossyGrayMat,
         optix::Matrix4x4::translate(optix::make_float3(-2, 1, 2.5)) *
             optix::Matrix4x4::rotate(M_PI / 3, optix::make_float3(0, 1, 0)));
     optix::GeometryGroup monkey2 = resources->createGeometryGroup(
@@ -124,15 +127,25 @@ void Renderer::initWorld() {
             optix::Matrix4x4::rotate(M_PI * 1.2f, optix::make_float3(1, 0, 0)));
     optix::GeometryGroup plane = resources->createGeometryGroup(
         planeObj, greenMat, optix::Matrix4x4::scale(optix::make_float3(10.0)));
-    optix::GeometryGroup sphere = resources->createGeometryGroup(sphereObj, blueMat,
+    optix::GeometryGroup mirror  = resources->createGeometryGroup(planeObj, mirrorMat,
+        optix::Matrix4x4::rotate(M_PI / 2, optix::make_float3(1, 0, 0)) *
+            optix::Matrix4x4::rotate(M_PI / 3, optix::make_float3(0, 0, 1)) *
+            optix::Matrix4x4::translate(optix::make_float3(-2, 4, -2)) *
+            optix::Matrix4x4::scale(optix::make_float3(7.0)));
+    optix::GeometryGroup sphere1 = resources->createGeometryGroup(sphereObj, blueMat,
         optix::Matrix4x4::scale(optix::make_float3(1.5)) *
             optix::Matrix4x4::translate(optix::make_float3(-1.5, 0.5, -1.5)));
+    optix::GeometryGroup sphere2 = resources->createGeometryGroup(sphereObj, glossyRedMat,
+        optix::Matrix4x4::translate(optix::make_float3(-0.6, 1.65, -0.9)) *
+            optix::Matrix4x4::scale(optix::make_float3(0.6)));
 
     groupRoot->addChild(monkey1);
     groupRoot->addChild(monkey2);
     groupRoot->addChild(cone);
     groupRoot->addChild(plane);
-    groupRoot->addChild(sphere);
+    groupRoot->addChild(mirror);
+    groupRoot->addChild(sphere1);
+    groupRoot->addChild(sphere2);
 
     // read world description
 
