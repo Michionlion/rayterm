@@ -31,7 +31,7 @@ class Terminal {
     Renderer* renderer;
     UnicodeBuffer* buffer;
 
-    Terminal(int samples);
+    explicit Terminal(int samples);
     ~Terminal();
 
     void renderFrame();

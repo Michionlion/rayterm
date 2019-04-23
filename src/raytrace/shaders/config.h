@@ -12,7 +12,9 @@
 // 0 == Disable all OptiX exceptions, rtPrintfs and rtAssert functionality. (Benchmark only in this
 // mode!) 1 == Enable  all OptiX exceptions, rtPrintfs and rtAssert functionality. (Really only for
 // debugging, big performance hit!)
-#define USE_DEBUG_EXCEPTIONS 1
+#ifndef USE_DEBUG_EXCEPTIONS
+#define USE_DEBUG_EXCEPTIONS 0
+#endif
 
 #include <optix.h>
 #include <optixu/optixu_math_namespace.h>

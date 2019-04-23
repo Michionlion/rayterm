@@ -76,7 +76,7 @@ void Renderer::initOptiX() {
 
     // global shader variables
     context["sysColorSky"]->setFloat(1, 1, 1);
-    context["sysColorGround"]->setFloat(0, 0, 0);
+    context["sysColorGround"]->setFloat(0.3, 0.5, 1);
 
     // setup post processing
 

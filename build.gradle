@@ -52,7 +52,7 @@ model {
             cuda {
                 headers.srcDirs "${cuda_location}/include"
                 binaries.withType(SharedLibraryBinary) {
-                    sharedLibraryFile = file("${cuda_location}/lib64/libcudart.so.10.0")
+                    sharedLibraryFile = file("${cuda_location}/lib64/libcudart.so.10.1")
                 }
                 binaries.withType(StaticLibraryBinary) {
                     staticLibraryFile = file("${cuda_location}/lib64/libcudart_static.a")
@@ -167,14 +167,16 @@ model {
             architecture "x86_64"
         }
     }
-    // gcc/g++ 7 is required for cuda, but no way to ensure that
+    // gcc/g++ 8 is required for cuda, but no way to ensure that
     // is kept currently, except to manually set executable, and
     // hope gradle can find it. The path variable can help.
+    // This used to be more difficult when gcc 7 was required
+    // in CUDA 10.0.
     toolChains {
         gcc(Gcc) {
             path gcc_path
             eachPlatform { tools ->
-                tools.cppCompiler.executable = "g++-7"
+                tools.cppCompiler.executable = "g++"
             }
         }
     }
@@ -198,7 +200,8 @@ def setCuArgs(cppCompiler) {
 task compileCu() {
 
     def ptxFolder = getPTXFolder();
-    def cuFiles = getCuFiles()
+    def cuFiles = getCuFiles();
+    // def debug = false;
 
     doFirst {
         ptxFolder.mkdirs();
@@ -215,6 +218,11 @@ task compileCu() {
                 executable "${cuda_location}/bin/nvcc"
                 args "-I${optix_location}/include"
                 args "-I${cuda_location}/include"
+                // if(debug) {
+                //     args "-DUSE_DEBUG_EXCEPTIONS=1"
+                // } else {
+                //     args "-DUSE_DEBUG_EXCEPTIONS=0"
+                // }
                 args "-ptx", "-o", dest, "-std=c++11"
                 args file.path
             }
