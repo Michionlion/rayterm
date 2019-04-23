@@ -52,7 +52,7 @@ model {
             cuda {
                 headers.srcDirs "${cuda_location}/include"
                 binaries.withType(SharedLibraryBinary) {
-                    sharedLibraryFile = file("${cuda_location}/lib64/libcudart.so.10.0")
+                    sharedLibraryFile = file("${cuda_location}/lib64/libcudart.so.10.1")
                 }
                 binaries.withType(StaticLibraryBinary) {
                     staticLibraryFile = file("${cuda_location}/lib64/libcudart_static.a")
