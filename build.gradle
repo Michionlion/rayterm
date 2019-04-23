@@ -200,7 +200,8 @@ def setCuArgs(cppCompiler) {
 task compileCu() {
 
     def ptxFolder = getPTXFolder();
-    def cuFiles = getCuFiles()
+    def cuFiles = getCuFiles();
+    // def debug = false;
 
     doFirst {
         ptxFolder.mkdirs();
@@ -217,6 +218,11 @@ task compileCu() {
                 executable "${cuda_location}/bin/nvcc"
                 args "-I${optix_location}/include"
                 args "-I${cuda_location}/include"
+                // if(debug) {
+                //     args "-DUSE_DEBUG_EXCEPTIONS=1"
+                // } else {
+                //     args "-DUSE_DEBUG_EXCEPTIONS=0"
+                // }
                 args "-ptx", "-o", dest, "-std=c++11"
                 args file.path
             }
