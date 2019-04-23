@@ -114,8 +114,8 @@ void Renderer::initWorld() {
     int greenMat      = resources->loadMatFile("diffuse_green.mat");
     int blueMat       = resources->loadMatFile("diffuse_blue.mat");
     int mirrorMat     = resources->loadMatFile("mirror.mat");
-    int glossyRedMat  = resources->loadMatFile("glossy_red.mat");
     int glossyGrayMat = resources->loadMatFile("glossy_gray.mat");
+    int glassMat      = resources->loadMatFile("glass.mat");
 
     optix::GeometryGroup monkey1 = resources->createGeometryGroup(monkeyObj, glossyGrayMat,
         optix::Matrix4x4::translate(optix::make_float3(-2, 1, 2.5)) *
@@ -135,8 +135,8 @@ void Renderer::initWorld() {
     optix::GeometryGroup sphere1 = resources->createGeometryGroup(sphereObj, blueMat,
         optix::Matrix4x4::scale(optix::make_float3(1.5)) *
             optix::Matrix4x4::translate(optix::make_float3(-1.5, 0.5, -1.5)));
-    optix::GeometryGroup sphere2 = resources->createGeometryGroup(sphereObj, glossyRedMat,
-        optix::Matrix4x4::translate(optix::make_float3(-0.6, 1.65, -0.9)) *
+    optix::GeometryGroup sphere2 = resources->createGeometryGroup(sphereObj, glassMat,
+        optix::Matrix4x4::translate(optix::make_float3(-0.7, 1.65, -0.85)) *
             optix::Matrix4x4::scale(optix::make_float3(0.6)));
 
     groupRoot->addChild(monkey1);

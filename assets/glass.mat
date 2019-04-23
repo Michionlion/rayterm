@@ -1,0 +1,4 @@
+closest:dielectric,closest_hit,0
+any:dielectric,any_hit,0
+var:float3,varAttenuation,1,1,1
+var:float,varIndexOfRefraction,1.52
