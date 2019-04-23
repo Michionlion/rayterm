@@ -19,7 +19,7 @@ incomplete CPU implementation, available [here](https://github.com/Michionlion/r
 
 * [OptiX 6.0.0 SDK](http://raytracing-docs.nvidia.com/optix_6_0/index.html)
   (Installed to `lib/optix`)
-* [CUDA Toolkit 10.0](https://developer.nvidia.com/cuda-toolkit-archive)
+* [CUDA Toolkit 10.1](https://developer.nvidia.com/cuda-toolkit-archive)
   (Installed to `lib/cuda`)
 * [MDL SDK](https://developer.nvidia.com/mdl-sdk)
   (Installed to `lib/mdl`)
