@@ -114,7 +114,6 @@ void Renderer::initWorld() {
     int greenMat      = resources->loadMatFile("diffuse_green.mat");
     int blueMat       = resources->loadMatFile("diffuse_blue.mat");
     int mirrorMat     = resources->loadMatFile("mirror.mat");
-    int glossyRedMat  = resources->loadMatFile("glossy_red.mat");
     int glossyGrayMat = resources->loadMatFile("glossy_gray.mat");
     int glassMat      = resources->loadMatFile("glass.mat");
 
