@@ -9,7 +9,7 @@
 This repository is the GPU implementation of `RayTerm`. There is also an
 incomplete CPU implementation, available [here](https://github.com/Michionlion/rayterm-cpu).
 
-[![Gif Demo](https://media.githubusercontent.com/media/Michionlion/compdoc/master/rtexplore/terminal.gif)](https://www.youtube.com/embed/mr3k4GER3Rs?loop=1&playlist=mr3k4GER3Rs&controls=0&autoplay=1)
+[![Gif Demo](https://github.com/Michionlion/compdoc/raw/master/rtexplore/terminal.gif)](https://www.youtube.com/embed/mr3k4GER3Rs?loop=1&playlist=mr3k4GER3Rs&controls=0&autoplay=1)
 
 ### Development
 
