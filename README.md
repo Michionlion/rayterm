@@ -34,6 +34,10 @@ automated installation requires [git lfs](https://git-lfs.github.com/), and
 will fail without it. See `gradle.properties` to change the default expected
 installation locations, if you wish to use external packages.
 
+***Postmortem Note***: Some of the custom git repositories that `gradle deps`
+uses no longer exist, and so anyone wishing to build this project will
+need to manually install and point Gradle to the correct locations.
+
 The `gcc` toolchain is used to compile `RayTerm`. We specifically require
 `g++-7`, and by default search `/usr/bin/` for it. This is taken care of
 automatically when `gradle compileCu` is run, but may need to be manually
