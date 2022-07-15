@@ -1,15 +1,15 @@
 [submodule "lib/googletest"]
 	path = lib/googletest
-	url = https://github.com/google/googletest.git
+	url = git@github.com:google/googletest.git
 [submodule "lib/mdl"]
 	path = lib/mdl
-	url = https://github.com/Michionlion/mdl.git
+	url = git@github.com:Michionlion/mdl.git
 [submodule "lib/cuda"]
 	path = lib/cuda
-	url = https://github.com/Michionlion/cuda.git
+	url = git@github.com:Michionlion/cuda.git
 [submodule "lib/optix"]
 	path = lib/optix
-	url = https://github.com/Michionlion/optix.git
+	url = git@github.com:Michionlion/optix.git
 [submodule "lib/libtickit"]
 	path = lib/libtickit
-	url = https://github.com/Michionlion/libtickit.git
+	url = git@github.com:Michionlion/libtickit.git
